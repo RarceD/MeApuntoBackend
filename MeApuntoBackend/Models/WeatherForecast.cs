@@ -1,4 +1,4 @@
-namespace MeApuntoBackend
+namespace MeApuntoBackend.Models
 {
     public class WeatherForecast
     {
