@@ -1,5 +1,6 @@
 
 using MeApuntoBackend.Repositories;
+using MeApuntoBackend.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace MeApuntoBackend
@@ -16,6 +17,13 @@ namespace MeApuntoBackend
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            // Repositories;
+            builder.Services.AddScoped<IClientRepository, ClientsRepository>();
+            builder.Services.AddScoped<IBookerRepository, BookerRepository>();
+
+            // Services:
+            builder.Services.AddScoped<ILoginManagementService, LoginManagementService>();
 
             // Add services to the container.
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
