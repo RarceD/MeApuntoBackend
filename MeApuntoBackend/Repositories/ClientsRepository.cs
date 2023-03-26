@@ -8,6 +8,10 @@ public class ClientsRepository : IClientRepository
     {
         _context = context;
     }
+    public void Add(ClientDb item) => _context.Clients.Add(item);
+    public void Remove(ClientDb item) => _context.Clients.Remove(item);
+    public void Update(ClientDb item) => _context.Clients.Update(item);
+
     public IEnumerable<ClientDb> GetAll()
     {
         List<ClientDb> clients = _context.Clients.ToList();
@@ -25,4 +29,12 @@ public class ClientsRepository : IClientRepository
         if (client == null) return null;
         return client;
     }
+    public bool IsValidUserCode(string code)
+    {
+        ClientDb? client = _context.Clients.Where(i => i.name == code).FirstOrDefault();
+        if (client == null) return true;
+        return false;
+    }
+
+
 }

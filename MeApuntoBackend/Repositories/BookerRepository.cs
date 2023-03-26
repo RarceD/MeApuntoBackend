@@ -8,6 +8,9 @@ public class BookerRepository : IBookerRepository
     {
         _context = context;
     }
+    public void Add(BookerDb item) => _context.Booker.Add(item);
+    public void Remove(BookerDb item) => _context.Booker.Remove(item);
+    public void Update(BookerDb item) => _context.Booker.Update(item);
     public IEnumerable<BookerDb> GetAll()
     {
         List<BookerDb> clients = _context.Booker.ToList();

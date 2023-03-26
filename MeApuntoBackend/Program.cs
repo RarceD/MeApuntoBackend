@@ -51,13 +51,14 @@ namespace MeApuntoBackend
 
         private static void LoadServices(WebApplicationBuilder builder)
         {
-            builder.Services.AddScoped<ILoginManagementService, LoginManagementService>();
+            builder.Services.AddScoped<IClientManagementService, ClientManagementService>();
         }
 
         private static void LoadRepositories(WebApplicationBuilder builder)
         {
             builder.Services.AddScoped<IClientRepository, ClientsRepository>();
             builder.Services.AddScoped<IBookerRepository, BookerRepository>();
+            builder.Services.AddScoped<IUrbaRepository, UrbaRepository>();
         }
     }
 }
