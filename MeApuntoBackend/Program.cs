@@ -12,18 +12,16 @@ namespace MeApuntoBackend
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
             // Repositories;
-            builder.Services.AddScoped<IClientRepository, ClientsRepository>();
-            builder.Services.AddScoped<IBookerRepository, BookerRepository>();
+            LoadRepositories(builder);
 
             // Services:
-            builder.Services.AddScoped<ILoginManagementService, LoginManagementService>();
+            LoadServices(builder);
 
             // Add services to the container.
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -49,6 +47,17 @@ namespace MeApuntoBackend
             app.MapControllers();
 
             app.Run();
+        }
+
+        private static void LoadServices(WebApplicationBuilder builder)
+        {
+            builder.Services.AddScoped<ILoginManagementService, LoginManagementService>();
+        }
+
+        private static void LoadRepositories(WebApplicationBuilder builder)
+        {
+            builder.Services.AddScoped<IClientRepository, ClientsRepository>();
+            builder.Services.AddScoped<IBookerRepository, BookerRepository>();
         }
     }
 }

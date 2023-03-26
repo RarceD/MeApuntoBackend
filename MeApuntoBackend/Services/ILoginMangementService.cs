@@ -1,5 +1,7 @@
-﻿namespace MeApuntoBackend.Services;
+﻿using MeApuntoBackend.Controllers.Dtos;
+
+namespace MeApuntoBackend.Services;
 public interface ILoginManagementService
 {
-    bool CheckUserExist(string user, string pass);
+    LoginResponse CheckUserExist(string user, string pass);
 }

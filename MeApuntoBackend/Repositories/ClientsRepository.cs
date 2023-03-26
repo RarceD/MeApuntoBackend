@@ -19,4 +19,10 @@ public class ClientsRepository : IClientRepository
         if (client == null) return new ClientDb();
         return client;
     }
+    public ClientDb? GetClientWithUser(string username)
+    {
+        ClientDb? client = _context.Clients.Where(i => i.username == username).FirstOrDefault();
+        if (client == null) return null;
+        return client;
+    }
 }

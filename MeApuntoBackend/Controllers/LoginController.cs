@@ -1,10 +1,11 @@
+using MeApuntoBackend.Controllers.Dtos;
 using MeApuntoBackend.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MeApuntoBackend.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class LoginController : ControllerBase
     {
         private readonly ILogger<LoginController> _logger;
@@ -15,12 +16,12 @@ namespace MeApuntoBackend.Controllers
             _loginManagementService = loginManagementService;
         }
 
-        [HttpGet(Name = "GetWeatherForecast")]
-        public IEnumerable<int> Get()
+        [HttpPost]
+        public LoginResponse MakeLogin(LoginDto input)
         {
-            string user = "", pass = "";
-            bool ok = _loginManagementService.CheckUserExist(user, pass);
-            return new List<int> { ok ? 1 : 0, 2, 3 };
+            if (input.User == null || input.Pass == null) 
+                return new LoginResponse() { Success = false };
+            return _loginManagementService.CheckUserExist(input.User, input.Pass);
         }
     }
 }
