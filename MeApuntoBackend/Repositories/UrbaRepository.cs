@@ -8,9 +8,21 @@ public class UrbaRepository : IUrbaRepository
     {
         _context = context;
     }
-    public void Add(UrbaDb item) => _context.Urbas.Add(item);
-    public void Remove(UrbaDb item) => _context.Urbas.Remove(item);
-    public void Update(UrbaDb item) => _context.Urbas.Update(item);
+    public void Add(UrbaDb item)
+    {
+        _context.Urbas.Add(item);
+        _context.SaveChanges();
+    }
+    public void Remove(UrbaDb item)
+    {
+        _context.Urbas.Remove(item);
+        _context.SaveChanges();
+    }
+    public void Update(UrbaDb item)
+    {
+        _context.Urbas.Update(item);
+        _context.SaveChanges();
+    }
 
     public IEnumerable<UrbaDb> GetAll()
     {

@@ -15,19 +15,20 @@ public class ClientManagementService : IClientManagementService
 
     public bool AddClient(CreateDto newClient, int urbaId)
     {
-        string tokenRnd = "";
-        ClientDb client = new ClientDb() { 
-             urba_id = urbaId,
-             name = newClient.Name,
-             username = newClient.User,
-             pass = newClient.Pass,
-             token = tokenRnd,
-             floor = newClient.Floor,
-             letter = newClient.Door,
-             house = newClient.House,
-        };
         try
         {
+            ClientDb client = new ClientDb()
+            {
+                urba_id = urbaId,
+                name = newClient.Name,
+                username = newClient.User,
+                pass = newClient.Pass,
+                token = Utils.Sha256(DateTime.Now.ToString()),
+                floor = newClient.Floor,
+                letter = newClient.Door,
+                house = newClient.House,
+                plays = 0
+            };
             _clientRepository.Add(client);
             return true;
         }
@@ -39,14 +40,14 @@ public class ClientManagementService : IClientManagementService
 
     public LoginResponse CheckUserExist(string user, string pass)
     {
-        var resp = new LoginResponse() {Success = false } ;
+        var resp = new LoginResponse() { Success = false };
         ClientDb? client = _clientRepository.GetClientWithUser(user);
         if (client == null) return resp;
         if (pass == client.pass)
         {
             resp.Success = true;
             resp.Token = client.token;
-            resp.Id = client.id;
+            resp.Id = (int)client.id;
         }
         return resp;
     }

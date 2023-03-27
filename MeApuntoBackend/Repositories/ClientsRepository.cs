@@ -8,9 +8,21 @@ public class ClientsRepository : IClientRepository
     {
         _context = context;
     }
-    public void Add(ClientDb item) => _context.Clients.Add(item);
-    public void Remove(ClientDb item) => _context.Clients.Remove(item);
-    public void Update(ClientDb item) => _context.Clients.Update(item);
+    public void Add(ClientDb item)
+    {
+        _context.Clients.Add(item);
+        _context.SaveChanges();
+    }
+    public void Remove(ClientDb item)
+    {
+        _context.Clients.Remove(item);
+        _context.SaveChanges();
+    }
+    public void Update(ClientDb item)
+    {
+        _context.Clients.Update(item);
+        _context.SaveChanges();
+    }
 
     public IEnumerable<ClientDb> GetAll()
     {

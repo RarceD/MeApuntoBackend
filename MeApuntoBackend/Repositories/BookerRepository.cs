@@ -8,9 +8,21 @@ public class BookerRepository : IBookerRepository
     {
         _context = context;
     }
-    public void Add(BookerDb item) => _context.Booker.Add(item);
-    public void Remove(BookerDb item) => _context.Booker.Remove(item);
-    public void Update(BookerDb item) => _context.Booker.Update(item);
+    public void Add(BookerDb item)
+    {
+        _context.Booker.Add(item);
+        _context.SaveChanges();
+    }
+    public void Remove(BookerDb item)
+    {
+        _context.Booker.Remove(item);
+        _context.SaveChanges();
+    }
+    public void Update(BookerDb item)
+    {
+        _context.Booker.Update(item);
+        _context.SaveChanges();
+    }
     public IEnumerable<BookerDb> GetAll()
     {
         List<BookerDb> clients = _context.Booker.ToList();

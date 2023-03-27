@@ -37,6 +37,7 @@ public class CreateController : ControllerBase
         // Decode code to base64 - input.Name
         var base64EncodedBytes = Convert.FromBase64String(input.Name);
         string code = System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
+        input.Name = code;
         // Validate code from user, maybe is in use
         if (!_loginManagementService.IsValidUserCode(code)) return resp;
 
