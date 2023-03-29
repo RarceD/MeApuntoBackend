@@ -1,4 +1,5 @@
 ﻿using MeApuntoBackend.Controllers.Dtos;
+using MeApuntoBackend.Models;
 
 namespace MeApuntoBackend.Services;
 public interface IClientManagementService
@@ -7,5 +8,5 @@ public interface IClientManagementService
     int GetValidUrbaKeyId(string key);
     bool IsValidUserCode(string code);
     bool AddClient(CreateDto newClient, int urbaId);
-
+    ProfileResponse? GetProfileInfo(int id);
 }

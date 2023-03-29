@@ -63,4 +63,29 @@ public class ClientManagementService : IClientManagementService
     {
         return _clientRepository.IsValidUserCode(code);
     }
+    public ProfileResponse GetProfileInfo(int id)
+    {
+        ProfileResponse profile = new();
+
+        // Obtein the profile:
+        ClientDb? client = _clientRepository.GetById(id);
+        if (client == null) return profile;
+
+        // Obtein urba name:
+        UrbaDb urba = _urbaRepository.GetById(client.urba_id);
+        if (client == null) return profile;
+
+        return convertToDto(client, urba.name ?? "");
+    }
+    private ProfileResponse convertToDto(ClientDb profile, string urbaName)
+    {
+        ProfileResponse profileResponse = new ProfileResponse();    
+        profileResponse.letter = profile.letter;
+        profileResponse.username = profile.username;
+        profileResponse.urbaName = urbaName; 
+        profileResponse.Name = profile.name;
+        profileResponse.plays = (int)profile.plays; 
+        return profileResponse;
+    }
+
 }
