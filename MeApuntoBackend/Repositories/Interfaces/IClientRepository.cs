@@ -5,5 +5,4 @@ public interface IClientRepository : IRepository<ClientDb>
 {
     ClientDb? GetClientWithUser(string user);
     bool IsValidUserCode(string code);
-    void UpdateProfileInfo(ClientDb updateClient);
 }

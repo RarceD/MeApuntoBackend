@@ -6,20 +6,21 @@ namespace MeApuntoBackend.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ProfileController : ControllerBase
+public class ProfileController : GenericController
 {
     private readonly ILogger<LoginController> _logger;
-    private readonly IClientManagementService _loginManagementService;
     public ProfileController(ILogger<LoginController> logger, IClientManagementService loginManagementService)
+        : base(loginManagementService)
     {
         _logger = logger;
-        _loginManagementService = loginManagementService;
     }
 
     [HttpGet]
-    public ProfileResponse GetProfileInfo(ProfileDto input)
+    public ProfileResponse GetProfileInfo(string token, int id)
     {
-        ProfileResponse? profile = _loginManagementService.GetProfileInfo(input.Id);
+        if (!CheckUserTokenId(token, id))  return new ProfileResponse(); 
+
+        ProfileResponse? profile = _clientManagementService.GetProfileInfo(id);
         if (profile == null) { return new ProfileResponse(); }
         return profile;
     }
@@ -27,8 +28,9 @@ public class ProfileController : ControllerBase
     [HttpPost]
     public ActionResult UpdateProfileInfo(CreateDto input)
     {
-        var resp = NoContent();
-        return resp;
+        // if (!CheckUserTokenId(token, id))  return NoContent(); 
+        var success = _clientManagementService.UpdateUserProfile(input);
+        return success ? Ok() : NoContent();
     }
 
 

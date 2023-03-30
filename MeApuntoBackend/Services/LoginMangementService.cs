@@ -88,4 +88,15 @@ public class ClientManagementService : IClientManagementService
         return profileResponse;
     }
 
+    public bool UpdateUserProfile(CreateDto profileId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public bool CheckUserTokenId(string token, int id)
+    {
+        ClientDb? client = _clientRepository.GetById(id);
+        if (client == null) return false;
+        return client.token == token;
+    }
 }

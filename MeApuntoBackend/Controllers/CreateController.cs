@@ -1,7 +1,6 @@
 using MeApuntoBackend.Controllers.Dtos;
 using MeApuntoBackend.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.WebUtilities;
 
 namespace MeApuntoBackend.Controllers;
 
@@ -17,7 +16,6 @@ public class CreateController : ControllerBase
         _loginManagementService = loginManagementService;
     }
 
-    //[HttpGet("{id}")]
     [HttpPost]
     public ActionResult CreateUser(CreateDto input)
     {

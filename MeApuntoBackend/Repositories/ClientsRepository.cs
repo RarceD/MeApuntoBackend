@@ -47,7 +47,4 @@ public class ClientsRepository : IClientRepository
         if (client == null) return true;
         return false;
     }
-    public void UpdateProfileInfo(ClientDb updateClient)
-    {
-    }
 }
