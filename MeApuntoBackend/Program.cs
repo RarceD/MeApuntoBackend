@@ -52,6 +52,8 @@ namespace MeApuntoBackend
         private static void LoadServices(WebApplicationBuilder builder)
         {
             builder.Services.AddScoped<IClientManagementService, ClientManagementService>();
+            builder.Services.AddScoped<ICourtManagementService, CourtManagementService>();
+            builder.Services.AddScoped<IBookerManagementService, BookerManagementService>();
         }
 
         private static void LoadRepositories(WebApplicationBuilder builder)
@@ -59,6 +61,7 @@ namespace MeApuntoBackend
             builder.Services.AddScoped<IClientRepository, ClientsRepository>();
             builder.Services.AddScoped<IBookerRepository, BookerRepository>();
             builder.Services.AddScoped<IUrbaRepository, UrbaRepository>();
+            builder.Services.AddScoped<INormativeRepository, NormativeRepository>();
         }
     }
 }
