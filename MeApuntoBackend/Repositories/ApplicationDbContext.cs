@@ -14,17 +14,4 @@ public class ApplicationDbContext : DbContext
     public DbSet<CourtDb> Courts { get; set; }
     public DbSet<NormativeDb> Normative { get; set; }
     public DbSet<UrbaDb> Urbas { get; set; }
-
-
-    // Add to db:
-    // _dbContext.Add(test);
-    // _dbContext.SaveChanges();
-
-    // Remove from db:
-    //_dbContext.Remove(toDel);
-    //_dbContext.SaveChanges();
-
-    // Edit db:
-    // _dbContext.Update(toEdit);
-    // _dbContext.SaveChanges();
 }
