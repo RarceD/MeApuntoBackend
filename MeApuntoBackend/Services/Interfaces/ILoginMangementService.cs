@@ -10,4 +10,5 @@ public interface IClientManagementService
     ProfileResponse? GetProfileInfo(int id);
     bool UpdateUserProfile(CreateDto profileId);
     bool CheckUserTokenId(string token, int id);
+    bool ForgetPassword(string username);
 }

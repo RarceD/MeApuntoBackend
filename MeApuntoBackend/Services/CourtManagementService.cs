@@ -9,15 +9,30 @@ public class CourtManagementService : ICourtManagementService
     private readonly IClientRepository _clientRepository;
     private readonly IUrbaRepository _urbaRepository;
     private readonly INormativeRepository _normativeRespository;
+    private readonly ICourtRepository _courtRespository;
     public CourtManagementService(
         IClientRepository clientRepository,
         IUrbaRepository urbaRepository,
-        INormativeRepository normativeRespository
-        )
+        INormativeRepository normativeRespository,
+        ICourtRepository courtRespository)
     {
         _clientRepository = clientRepository;
         _urbaRepository = urbaRepository;
         _normativeRespository = normativeRespository;
+        _courtRespository = courtRespository;
+    }
+    public IEnumerable<CourtResponse> GetCourts(int clientId)
+    {
+        var courts = new List<CourtResponse>();
+
+        // First get the urbaId:
+        var client = _clientRepository.GetById(clientId);
+        if (client == null) return courts;
+
+        // Get courts:
+        //var courtsDb = _courtRespository.(client.urba_id);
+        //if (courtsDb == null) return courts;
+        return courts;
     }
     public IEnumerable<NormativeResponse> GetNormativeByClientId(int clientId)
     {

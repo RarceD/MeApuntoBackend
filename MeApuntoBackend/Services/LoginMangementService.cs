@@ -7,10 +7,17 @@ public class ClientManagementService : IClientManagementService
 {
     private readonly IClientRepository _clientRepository;
     private readonly IUrbaRepository _urbaRepository;
-    public ClientManagementService(IClientRepository clientRepository, IUrbaRepository urbaRepository)
+    private readonly IMailService _mailService;
+
+    public ClientManagementService(
+        IClientRepository clientRepository,
+        IUrbaRepository urbaRepository,
+        IMailService mailService
+        )
     {
         _clientRepository = clientRepository;
         _urbaRepository = urbaRepository;
+        _mailService = mailService;
     }
 
     public bool AddClient(CreateDto newClient, int urbaId)
@@ -23,7 +30,7 @@ public class ClientManagementService : IClientManagementService
                 name = newClient.Name,
                 username = newClient.User,
                 pass = newClient.Pass,
-                token = Utils.Sha256(DateTime.Now.ToString()),
+                token = Utils.GetSha256(DateTime.Now.ToString()),
                 floor = newClient.Floor,
                 letter = newClient.Door,
                 house = newClient.House,
@@ -79,12 +86,12 @@ public class ClientManagementService : IClientManagementService
     }
     private ProfileResponse convertToDto(ClientDb profile, string urbaName)
     {
-        ProfileResponse profileResponse = new ProfileResponse();    
+        ProfileResponse profileResponse = new ProfileResponse();
         profileResponse.letter = profile.letter;
         profileResponse.username = profile.username;
-        profileResponse.urbaName = urbaName; 
+        profileResponse.urbaName = urbaName;
         profileResponse.Name = profile.name;
-        profileResponse.plays = (int)profile.plays; 
+        profileResponse.plays = (int)profile.plays;
         return profileResponse;
     }
 
@@ -98,5 +105,23 @@ public class ClientManagementService : IClientManagementService
         ClientDb? client = _clientRepository.GetById(id);
         if (client == null) return false;
         return client.token == token;
+    }
+    public bool ForgetPassword(string username)
+    {
+        // Get client id:
+        ClientDb? client = _clientRepository.GetClientWithUser(username);
+        if (client == null) return false;
+
+        // Generate new pass:
+        client.pass = Utils.GetMD5(
+            new Random().Next(0, 1000).ToString());
+
+        // Update db:
+        _clientRepository.Update(client);
+
+        // Send Email
+        _mailService.SendEmail(client.username ?? string.Empty, "galletas");
+
+        return false;
     }
 }
