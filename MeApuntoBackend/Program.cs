@@ -30,6 +30,9 @@ namespace MeApuntoBackend
                 options.UseSqlite(connectionString);
             });
 
+            // Background services:
+            builder.Services.AddHostedService<PeriodicTaskService>();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -54,6 +57,7 @@ namespace MeApuntoBackend
             builder.Services.AddScoped<IClientManagementService, ClientManagementService>();
             builder.Services.AddScoped<ICourtManagementService, CourtManagementService>();
             builder.Services.AddScoped<IBookerManagementService, BookerManagementService>();
+            builder.Services.AddScoped<ICourtManagementService, CourtManagementService>();
             builder.Services.AddScoped<IMailService, MailService>();
         }
 
@@ -63,6 +67,7 @@ namespace MeApuntoBackend
             builder.Services.AddScoped<IBookerRepository, BookerRepository>();
             builder.Services.AddScoped<IUrbaRepository, UrbaRepository>();
             builder.Services.AddScoped<INormativeRepository, NormativeRepository>();
+            builder.Services.AddScoped<ICourtRepository, CourtRepository>();
         }
     }
 }
