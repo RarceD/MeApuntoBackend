@@ -120,7 +120,7 @@ public class ClientManagementService : IClientManagementService
         _clientRepository.Update(client);
 
         // Send Email
-        _mailService.SendEmail(client.username ?? string.Empty, "galletas");
+        _mailService.SendEmail(client.username ?? string.Empty, "galletas", "contenido");
 
         return false;
     }
