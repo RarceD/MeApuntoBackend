@@ -9,32 +9,40 @@ namespace MeApuntoBackend.Controllers;
 public class BookController : GenericController
 {
     private readonly ILogger<LoginController> _logger;
-    public BookController(ILogger<LoginController> logger, IClientManagementService loginManagementService)
+    private readonly IBookerManagementService _bookerManagementService;
+    public BookController(ILogger<LoginController> logger,
+            IClientManagementService loginManagementService,
+            IBookerManagementService bookerManagementService)
         : base(loginManagementService)
     {
         _logger = logger;
+        _bookerManagementService = bookerManagementService;
     }
 
     [HttpGet]
-    public ProfileResponse GetBooks(string token, int id)
+    public IEnumerable<BookerResponse> GetBooks(string token, int id)
     {
-        if (!CheckUserTokenId(token, id)) return new ProfileResponse();
-        ProfileResponse? profile = _clientManagementService.GetProfileInfo(id);
-        if (profile == null) { return new ProfileResponse(); }
-        return profile;
+        var response = new List<BookerResponse>();
+        if (!CheckUserTokenId(token, id)) return response;
+        var allBooks = _bookerManagementService.GetBooks(id);
+        if (allBooks == null) return response;
+        return allBooks;
     }
 
     [HttpPost]
-    public ActionResult AddBookToDb(CreateDto input)
+    public ActionResult MakeBook(BookerDto input)
     {
-        var success = _clientManagementService.UpdateUserProfile(input);
+        if (!CheckUserTokenId(input.Token ?? string.Empty, input.Id)) return new NoContentResult();
+        bool success = _bookerManagementService.MakeABook(input);
         return success ? Ok() : NoContent();
     }
 
     [HttpPost("delete")]
-    public ActionResult Delte(CreateDto input)
+    public ActionResult Delte(BookerDto input)
     {
-        // if (!CheckUserTokenId(token, id))  return NoContent(); 
+        if (!CheckUserTokenId(input.Token ?? string.Empty, input.Id))  return NoContent(); 
+        int bookId = 123;
+        var allBooks = _bookerManagementService.DeleteBook(input.Id, bookId);
         return true ? Ok() : NoContent();
     }
 }

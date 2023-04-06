@@ -34,4 +34,10 @@ public class CourtRepository : ICourtRepository
         if (client == null) return new CourtDb();
         return client;
     }
+
+    public List<CourtDb> GetFromUrbaId(int urbaId)
+    {
+        List<CourtDb> clients = _context.Courts.Where(i=>i.urba_id == urbaId).ToList();
+        return clients;
+    }
 }
