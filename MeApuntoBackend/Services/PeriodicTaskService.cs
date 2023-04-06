@@ -27,9 +27,28 @@ public class PeriodicTaskService : BackgroundService
         {
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             _bookerRepository = new BookerRepository(dbContext);
-            var b = _bookerRepository.GetById(907);
-            Console.WriteLine(b.court_id);
+            ClearBookerTable();
+            ClearScheduleTable();
         }
+    }
+
+    private static void ClearBookerTable()
+    {
+        if ( _bookerRepository == null) return;
+        var allBooks = _bookerRepository.GetAll();
+
+        var yesterday = (int)DateTime.Now.DayOfWeek - 1;
+        if (yesterday < 0) yesterday = 6;
+
+        foreach (var booker in allBooks)
+        {
+            if (booker.weekday == yesterday)
+                _bookerRepository.Remove(booker);
+        }
+    }
+
+    private static void ClearScheduleTable()
+    {
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -39,6 +58,5 @@ public class PeriodicTaskService : BackgroundService
 
         // Run forever:
         while (!stoppingToken.IsCancellationRequested) await Task.Run(() => { });
-        //await Task.Delay(TimeSpan.FromSeconds(1000), stoppingToken);
     }
 }
