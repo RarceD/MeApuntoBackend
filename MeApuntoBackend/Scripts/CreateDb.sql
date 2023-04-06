@@ -4,8 +4,10 @@ CREATE TABLE Scheduler (
                      PRIMARY KEY AUTOINCREMENT,
     CourtId  INTEGER,
     Time     TEXT,
-    ClientId INTEGER
+    ClientId INTEGER,
+    Day      TEXT
 );
+
 
 CREATE TABLE Configuration (
     Id        INTEGER PRIMARY KEY AUTOINCREMENT,

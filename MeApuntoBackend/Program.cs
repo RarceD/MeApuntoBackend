@@ -57,7 +57,6 @@ namespace MeApuntoBackend
             builder.Services.AddScoped<IClientManagementService, ClientManagementService>();
             builder.Services.AddScoped<ICourtManagementService, CourtManagementService>();
             builder.Services.AddScoped<IBookerManagementService, BookerManagementService>();
-            builder.Services.AddScoped<ICourtManagementService, CourtManagementService>();
             builder.Services.AddScoped<IMailService, MailService>();
         }
 
@@ -68,6 +67,8 @@ namespace MeApuntoBackend
             builder.Services.AddScoped<IUrbaRepository, UrbaRepository>();
             builder.Services.AddScoped<INormativeRepository, NormativeRepository>();
             builder.Services.AddScoped<ICourtRepository, CourtRepository>();
+            builder.Services.AddScoped<ISchedulerRepository, SchedulerRepository>();
+            builder.Services.AddScoped<IConfigurationRepository, ConfigurationRepository>();
         }
     }
 }
