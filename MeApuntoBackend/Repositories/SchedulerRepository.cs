@@ -35,4 +35,10 @@ public class SchedulerRepository : ISchedulerRepository
         if (client == null) return new SchedulerDb();
         return client;
     }
+
+    public List<SchedulerDb> GetBookInDay(string day)
+    {
+        List<SchedulerDb> ocupied = _context.Scheduler.Where(i => i.Day == day).ToList();
+        return ocupied;
+    }
 }

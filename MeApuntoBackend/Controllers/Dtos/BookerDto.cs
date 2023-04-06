@@ -6,6 +6,7 @@
         public string? Token { get; set; }
         public int CourtId  { get; set; }
         public string? Time  { get; set; }
+        public string? Day  { get; set; }
     }
 
     public class BookerResponse
@@ -16,7 +17,7 @@
     }
     public class BookSchedul
     {
-        public DateTime Day { get; set; }
+        public string? Day { get; set; }
         public string? HourAvailable { get; set; }
         public bool Available { get; set; }
         public string? UserName { get; set; }

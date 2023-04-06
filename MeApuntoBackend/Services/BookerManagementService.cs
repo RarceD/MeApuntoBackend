@@ -44,7 +44,6 @@ public class BookerManagementService : IBookerManagementService
                 CourtName = court.name,
                 Scheduler = CheckHoursAreValidToBook(validHours, client.id, urba.advance_book)
             };
-
         }
     }
 
@@ -59,7 +58,7 @@ public class BookerManagementService : IBookerManagementService
         // Validate time:
         DateTime bookTime = DateTime.Now;
         DateTime.TryParse(newBook.Time, out bookTime);
-        if (!ValidAdvanceBookDay(bookTime, urba.advance_book)) return false;
+        if (!ValidDay(bookTime, urba.advance_book)) return false;
         if (!ValidHour(bookTime, newBook.CourtId)) return false;
 
         // Finally make the book:
@@ -74,11 +73,9 @@ public class BookerManagementService : IBookerManagementService
     private List<BookSchedul> CheckHoursAreValidToBook(List<ConfigurationDb> hours, int clientId, int advanceBook)
     {
         List<BookSchedul> bookScheduls = new List<BookSchedul>();
-        // Now detect the unvalid hours:
         for (int d = 0; d <= advanceBook; d++)
         {
-            // Day to check:
-            var day = DateTime.Now.AddDays(d);
+            var day = DateTime.Now.AddDays(d).Date.ToShortDateString();
 
             // Get all the books for the day x
             foreach (var h in hours)
@@ -88,18 +85,19 @@ public class BookerManagementService : IBookerManagementService
                     HourAvailable = h.ValidHour,
                     Day = day
                 });
+
             // Check if they are really not valid:
-            // TODO
+            List<SchedulerDb> invalidHours = _schedulerRepository.GetBookInDay(day);
             foreach (var b in bookScheduls)
             {
-
+                if (invalidHours.Select(i=>i.Time).Contains(b.HourAvailable))
+                    b.Available = false;
             }
-
         }
         return bookScheduls;
     }
 
-    private bool ValidAdvanceBookDay(DateTime dayToBook, int advanceBook)
+    private bool ValidDay(DateTime dayToBook, int advanceBook)
     {
         return true;
     }
