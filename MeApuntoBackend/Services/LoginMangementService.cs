@@ -91,13 +91,30 @@ public class ClientManagementService : IClientManagementService
         profileResponse.username = profile.username;
         profileResponse.urbaName = urbaName;
         profileResponse.Name = profile.name;
-        profileResponse.plays = (int)profile.plays;
+        profileResponse.plays = profile.plays;
         return profileResponse;
     }
 
-    public bool UpdateUserProfile(CreateDto profileId)
+    public bool UpdateUserProfile(ProfileDto profile)
     {
-        throw new NotImplementedException();
+        // Get original profile:
+        ClientDb? client = _clientRepository.GetById(profile.Id);
+        if (client == null) return false;
+
+        // Update profile only if changed:
+        if (profile.Username != string.Empty) client.username = profile.Username;
+        if (profile.Password != string.Empty) client.pass = profile.Password;
+
+        // Update profile:
+        try
+        {
+            _clientRepository.Update(client);
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
     }
 
     public bool CheckUserTokenId(string token, int id)

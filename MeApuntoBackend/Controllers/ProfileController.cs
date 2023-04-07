@@ -26,9 +26,9 @@ public class ProfileController : GenericController
     }
 
     [HttpPost]
-    public ActionResult UpdateProfileInfo(CreateDto input)
+    public ActionResult UpdateProfileInfo(ProfileDto input)
     {
-        // if (!CheckUserTokenId(token, id))  return NoContent(); 
+        if (!CheckUserTokenId(input.Token?? string.Empty, input.Id)) return NoContent(); 
         var success = _clientManagementService.UpdateUserProfile(input);
         return success ? Ok() : NoContent();
     }
