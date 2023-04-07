@@ -34,4 +34,10 @@ public class BookerRepository : IBookerRepository
         if (client == null) return new BookerDb();
         return client;
     }
+    public List<BookerDb> GetFromClientId(int clientId)
+    {
+        List<BookerDb> books = _context.Booker.Where(i => i.client_id == clientId).ToList();
+        return books;
+    }
+
 }

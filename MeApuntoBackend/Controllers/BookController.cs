@@ -38,11 +38,11 @@ public class BookController : GenericController
     }
 
     [HttpPost("delete")]
-    public ActionResult Delte(BookerDto input)
+    public ActionResult Delete(BookerDto input)
     {
         if (!CheckUserTokenId(input.Token ?? string.Empty, input.Id))  return NoContent(); 
         int bookId = 123;
-        var allBooks = _bookerManagementService.DeleteBook(input.Id, bookId);
-        return true ? Ok() : NoContent();
+        var success = _bookerManagementService.DeleteBook(input.Id, bookId);
+        return success ? Ok() : NoContent();
     }
 }

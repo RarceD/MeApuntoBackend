@@ -12,10 +12,12 @@ public class BookerManagementService : IBookerManagementService
     private readonly ISchedulerRepository _schedulerRepository;
     private readonly IConfigurationRepository _configurationRepository;
     private readonly ICourtRepository _courtRepository;
+    private readonly IBookerRepository _bookerRepository;
     public BookerManagementService(IClientRepository clientRepository,
           IUrbaRepository urbaRepository,
           ISchedulerRepository schedulerRepository,
           IConfigurationRepository configurationRepository,
+            IBookerRepository bookerRepository,
           ICourtRepository courtRepository)
     {
         _clientRepository = clientRepository;
@@ -23,6 +25,7 @@ public class BookerManagementService : IBookerManagementService
         _schedulerRepository = schedulerRepository;
         _configurationRepository = configurationRepository;
         _courtRepository = courtRepository;
+        _bookerRepository = bookerRepository;
     }
 
     #endregion
@@ -55,14 +58,11 @@ public class BookerManagementService : IBookerManagementService
         UrbaDb urba = _urbaRepository.GetById(clienteWhoBook.urba_id);
         if (urba == null) return false;
 
-        // Validate time:
-        DateTime bookTime = DateTime.Now;
-        DateTime.TryParse(newBook.Time, out bookTime);
-        if (!ValidDay(bookTime, urba.advance_book)) return false;
-        if (!ValidHour(bookTime, newBook.CourtId)) return false;
+        // Validate time and hour:
+        if (!ValidDayHour(newBook.Day ?? string.Empty, newBook.Time ?? string.Empty, urba.advance_book, newBook.Id)) return false;
 
         // Finally make the book:
-        return MakeBook(clienteWhoBook.id, newBook.CourtId, newBook.Time ?? string.Empty);
+        return MakeBook(clienteWhoBook.id, newBook.CourtId, newBook.Time ?? string.Empty, newBook.Day ?? string.Empty);
     }
 
     public bool DeleteBook(int clientId, int bookId)
@@ -90,33 +90,46 @@ public class BookerManagementService : IBookerManagementService
             List<SchedulerDb> invalidHours = _schedulerRepository.GetBookInDay(day);
             foreach (var b in bookScheduls)
             {
-                if (invalidHours.Select(i=>i.Time).Contains(b.HourAvailable))
+                if (invalidHours.Select(i => i.Time).Contains(b.HourAvailable))
                     b.Available = false;
             }
         }
         return bookScheduls;
     }
 
-    private bool ValidDay(DateTime dayToBook, int advanceBook)
-    {
-        return true;
-    }
-    private bool ValidHour(DateTime dayToBook, int courtId)
+    private bool ValidDayHour(string dayToBook, string hourToBook, int courtId, int clientId)
     {
         List<ConfigurationDb> validHours = _configurationRepository.GetAllFromCourtId(courtId);
         if (validHours.Count() == 0) return false;
 
-        if (validHours.Select(i => i.ValidHour).Contains(dayToBook.ToString()))
+        // First check if hour is valid according configuration:
+        if (!validHours.Select(i => i.ValidHour).Contains(hourToBook)) return false;
+
+        // Check someone has previously book same hour
+        var bookThisDay = _schedulerRepository.GetBookInDay(dayToBook);
+        foreach(var b in bookThisDay)
         {
-            return true;
+            if (b.Time == hourToBook) return false;
         }
+
+        // Check this client has book same day:
+        var previousClientBooks = _bookerRepository.GetFromClientId(clientId);
+        if (previousClientBooks.Count() == 0) return true;
+        foreach (var prevBooks in previousClientBooks)
+        {
+            if (prevBooks.Day == dayToBook) return false;
+        }
+
         return true;
     }
-    private bool MakeBook(int clientId, int courtId, string date)
+    private bool MakeBook(int clientId, int courtId, string hourToBook, string dayToBook)
     {
-        var newBook = new SchedulerDb() { ClientId = clientId, CourtId = courtId, Time = date };
+        var bookDay = Convert.ToDateTime(dayToBook);
+        var newBook = new SchedulerDb() { ClientId = clientId, CourtId = courtId, Time = hourToBook, Day = dayToBook };
+        var newRegister = new BookerDb() { client_id = clientId, court_id = courtId, Day = dayToBook, weekday = (int)bookDay.DayOfWeek, duration = "1", time_book = hourToBook };
         try
         {
+            _bookerRepository.Add(newRegister);
             _schedulerRepository.Add(newBook);
             return true;
         }
