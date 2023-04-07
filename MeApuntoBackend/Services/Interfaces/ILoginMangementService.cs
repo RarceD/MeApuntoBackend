@@ -8,7 +8,7 @@ public interface IClientManagementService
     bool IsValidUserCode(string code);
     bool AddClient(CreateDto newClient, int urbaId);
     ProfileResponse? GetProfileInfo(int id);
-    bool UpdateUserProfile(CreateDto profileId);
+    bool UpdateUserProfile(ProfileDto profileId);
     bool CheckUserTokenId(string token, int id);
     bool ForgetPassword(string username);
 }
