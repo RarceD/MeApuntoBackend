@@ -17,7 +17,7 @@ public class BookerManagementService : IBookerManagementService
           IUrbaRepository urbaRepository,
           ISchedulerRepository schedulerRepository,
           IConfigurationRepository configurationRepository,
-            IBookerRepository bookerRepository,
+          IBookerRepository bookerRepository,
           ICourtRepository courtRepository)
     {
         _clientRepository = clientRepository;
@@ -67,7 +67,24 @@ public class BookerManagementService : IBookerManagementService
 
     public bool DeleteBook(int clientId, int bookId)
     {
-        return true;
+        var scheduler = _schedulerRepository.GetById(bookId);
+        var book = _bookerRepository.GetAll()
+            .Where(i => i.client_id == clientId &&
+            i.court_id == scheduler.CourtId &&
+            i.time_book == scheduler.Time &&
+            i.Day == scheduler.Day
+            ).FirstOrDefault();
+        try
+        {
+            _schedulerRepository.Remove(scheduler);
+            if (book == null) return false;
+            _bookerRepository.Remove(book);
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
     }
 
     private List<BookSchedul> CheckHoursAreValidToBook(List<ConfigurationDb> hours, int clientId, int advanceBook)
@@ -107,19 +124,22 @@ public class BookerManagementService : IBookerManagementService
 
         // Check someone has previously book same hour
         var bookThisDay = _schedulerRepository.GetBookInDay(dayToBook);
-        foreach(var b in bookThisDay)
+        foreach (var b in bookThisDay)
         {
-            if (b.Time == hourToBook) return false;
-        }
+            // If I have previously book same court break
+            if (b.ClientId == clientId)
+            {
+                if (b.CourtId == courtId)
+                    return false;
+            }
+            else
+            {
+                // If other client has previously book same court SAME hour:
+                if (b.CourtId == courtId && b.Time == hourToBook)
+                    return false;
+            }
 
-        // Check this client has book same day:
-        var previousClientBooks = _bookerRepository.GetFromClientId(clientId);
-        if (previousClientBooks.Count() == 0) return true;
-        foreach (var prevBooks in previousClientBooks)
-        {
-            if (prevBooks.Day == dayToBook) return false;
         }
-
         return true;
     }
     private bool MakeBook(int clientId, int courtId, string hourToBook, string dayToBook)
