@@ -1,6 +1,7 @@
 
 using MeApuntoBackend.Repositories;
 using MeApuntoBackend.Services;
+using Microsoft.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace MeApuntoBackend
@@ -33,11 +34,14 @@ namespace MeApuntoBackend
             // Background services:
             builder.Services.AddHostedService<PeriodicTaskService>();
 
-            var app = builder.Build();
 
-            // Configure logs:
-            var loggerFactory = app.Services.GetService<ILoggerFactory>();
-            loggerFactory.AddFile(builder.Configuration["Logging:LogFilePath"].ToString());
+            // Add logging
+            builder.Services.AddLogging(logging =>
+            {
+                logging.AddFile("Logs/Log.{Date}.txt", LogLevel.Warning);
+            });
+
+            var app = builder.Build();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
