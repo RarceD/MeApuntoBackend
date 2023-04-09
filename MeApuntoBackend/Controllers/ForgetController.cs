@@ -23,6 +23,10 @@ public class ForgetController : ControllerBase
         if (input.Username == null) return resp;
 
         resp.Success = _clientManagementService.ForgetPassword(input.Username);
+        if (resp.Success)
+            _logger.LogWarning("Forget password user: " + input.Username + " OK");
+        else
+            _logger.LogError("Forget password user: " + input.Username + " does not exist in DB");
         return resp;
     }
 }

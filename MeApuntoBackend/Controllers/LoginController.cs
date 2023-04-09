@@ -21,6 +21,10 @@ public class LoginController : ControllerBase
     {
         if (input.User == null || input.Pass == null)
             return new LoginResponse() { Success = false };
-        return _loginManagementService.CheckUserExist(input.User, input.Pass);
+        var response = _loginManagementService.CheckUserExist(input.User, input.Pass);
+        if (!response.Success)
+            _logger.LogError("User: " + input.User + " error login with pass " + input.Pass);
+        return response;
+
     }
 }

@@ -34,15 +34,33 @@ public class BookController : GenericController
     {
         if (!CheckUserTokenId(input.Token ?? string.Empty, input.Id)) return new NoContentResult();
         bool success = _bookerManagementService.MakeABook(input);
-        return success ? Ok() : NoContent();
+        if (success)
+        {
+            _logger.LogWarning($"ClientId: {input.Id} has successfully make a book in courtId:{input.CourtId} for {input.Time}-{input.Day}");
+            return Ok();
+        }
+        else
+        {
+            _logger.LogWarning($"ClientId: {input.Id} has ERROR making book courtId:{input.CourtId} for {input.Time}-{input.Day}");
+            return NoContent();
+        }
     }
 
     [HttpPost("delete")]
     public ActionResult Delete(BookerDto input)
     {
-        if (!CheckUserTokenId(input.Token ?? string.Empty, input.Id))  return NoContent(); 
+        if (!CheckUserTokenId(input.Token ?? string.Empty, input.Id)) return NoContent();
         int bookId = 123;
         var success = _bookerManagementService.DeleteBook(input.Id, bookId);
+        if (success)
+        {
+            _logger.LogWarning($"ClientId: {input.Id} delete book for courtId:{input.CourtId} for {input.Time}-{input.Day}");
+        }
+        else
+        {
+            _logger.LogError($"ClientId: {input.Id} ERROR deleting book for courtId:{input.CourtId} for {input.Time}-{input.Day}");
+        }
+
         return success ? Ok() : NoContent();
     }
 }

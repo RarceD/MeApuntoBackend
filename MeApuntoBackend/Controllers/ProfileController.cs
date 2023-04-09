@@ -30,6 +30,10 @@ public class ProfileController : GenericController
     {
         if (!CheckUserTokenId(input.Token?? string.Empty, input.Id)) return NoContent(); 
         var success = _clientManagementService.UpdateUserProfile(input);
+        if (success)
+            _logger.LogWarning("Client id: " + input.Id + " has change its user/pass");
+        else
+            _logger.LogError("Client id: " + input.Id + " has change its user/pass");
         return success ? Ok() : NoContent();
     }
 

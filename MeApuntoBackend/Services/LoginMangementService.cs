@@ -8,8 +8,10 @@ public class ClientManagementService : IClientManagementService
     private readonly IClientRepository _clientRepository;
     private readonly IUrbaRepository _urbaRepository;
     private readonly IMailService _mailService;
+    private readonly ILogger<ClientManagementService> _logger;
 
     public ClientManagementService(
+        ILogger<ClientManagementService> logger,
         IClientRepository clientRepository,
         IUrbaRepository urbaRepository,
         IMailService mailService
@@ -18,6 +20,7 @@ public class ClientManagementService : IClientManagementService
         _clientRepository = clientRepository;
         _urbaRepository = urbaRepository;
         _mailService = mailService;
+        _logger = logger;
     }
 
     public bool AddClient(CreateDto newClient, int urbaId)
@@ -121,6 +124,9 @@ public class ClientManagementService : IClientManagementService
     {
         ClientDb? client = _clientRepository.GetById(id);
         if (client == null) return false;
+        var notCheting = client.token == token;
+        if (!notCheting)
+            _logger.LogWarning("Client with id: " + id + " has modified token and id");
         return client.token == token;
     }
     public bool ForgetPassword(string username)
