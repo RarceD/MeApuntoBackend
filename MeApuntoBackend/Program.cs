@@ -35,6 +35,10 @@ namespace MeApuntoBackend
 
             var app = builder.Build();
 
+            // Configure logs:
+            var loggerFactory = app.Services.GetService<ILoggerFactory>();
+            loggerFactory.AddFile(builder.Configuration["Logging:LogFilePath"].ToString());
+
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
