@@ -20,6 +20,7 @@ public class NormativeController : GenericController
     }
 
     [HttpGet]
+    [ResponseCache(Duration = 60 * 10)] // 10min cache
     public IEnumerable<NormativeResponse> GetNormative(string token, int id)
     {
         var normatives = new List<NormativeResponse>();
