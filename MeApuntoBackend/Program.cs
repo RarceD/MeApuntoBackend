@@ -12,6 +12,13 @@ namespace MeApuntoBackend
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Services.AddCors(o => o.AddPolicy("NUXT", builder =>
+            {
+                builder.AllowAnyOrigin()
+                       .AllowAnyMethod()
+                       .AllowAnyHeader();
+            }));
+
             // Add services to the container.
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -50,6 +57,7 @@ namespace MeApuntoBackend
                 app.UseSwaggerUI();
             }
 
+            app.UseCors("NUXT");
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
