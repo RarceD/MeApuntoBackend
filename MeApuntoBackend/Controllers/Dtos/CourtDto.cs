@@ -1,20 +1,16 @@
-﻿namespace MeApuntoBackend.Controllers.Dtos
+﻿
+namespace MeApuntoBackend.Controllers.Dtos;
+public class CourtResponse
 {
-    public class CourtDto
+    public class Timetable
     {
-        public string? User { get; set; }
-        public string? Pass { get; set; }
-        public string? Key { get; set; }
-        public string? Name { get; set; }
-        public string? Door { get; set; }
-        public string? Floor { get; set; }
-        public string? House { get; set; }
+        public string? Day { get; set; }
+        public string? Time { get; set; }
+        public bool Valid { get; set; }
     }
-
-    public class CourtResponse
-    {
-        public int Id { get; set; }
-        public string? Token { get; set; }
-        public bool Success { get; set; }
-    }
+    public int Id { get; set; }
+    public string? Name { get; set; }
+    public int Type { get; set; }
+    public string? ValidTimes { get; set; }
+    public List<Timetable>? Timetables { get; set; }
 }
