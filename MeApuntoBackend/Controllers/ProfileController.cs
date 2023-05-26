@@ -21,19 +21,29 @@ public class ProfileController : GenericController
         if (!CheckUserTokenId(token, id))  return new ProfileResponse(); 
 
         ProfileResponse? profile = _clientManagementService.GetProfileInfo(id);
-        if (profile == null) { return new ProfileResponse(); }
-        return profile;
+        return profile == null ? new ProfileResponse() : profile;
     }
 
     [HttpPost]
     public ActionResult UpdateProfileInfo(ProfileDto input)
     {
-        if (!CheckUserTokenId(input.Token?? string.Empty, input.Id)) return NoContent(); 
+        if (!CheckUserTokenId(input.Token?? string.Empty, input.Id)) return NoContent();
         var success = _clientManagementService.UpdateUserProfile(input);
         if (success)
-            _logger.LogWarning("Client id: " + input.Id + " has change its user/pass");
+        {
+            if (input.Username != "null") 
+            {
+                _logger.LogWarning("Client id: " + input.Id + " has change its username");
+            }
+            else
+            {
+                _logger.LogWarning("Client id: " + input.Id + " has change its password");
+            }
+        }
         else
-            _logger.LogError("Client id: " + input.Id + " has change its user/pass");
+        {
+            _logger.LogError("Client id: " + input.Id + " not able to change its user/pass");
+        }
         return success ? Ok() : NoContent();
     }
 
