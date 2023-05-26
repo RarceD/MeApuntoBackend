@@ -6,4 +6,5 @@ public class SchedulerDb
     public int ClientId { get; set; }
     public string? Time { get; set; }
     public string? Day { get; set; }
+    public string? Duration { get; set; }
 }

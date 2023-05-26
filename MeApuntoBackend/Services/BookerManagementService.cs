@@ -1,6 +1,7 @@
 ﻿using MeApuntoBackend.Controllers.Dtos;
 using MeApuntoBackend.Models;
 using MeApuntoBackend.Repositories;
+using System.Globalization;
 
 namespace MeApuntoBackend.Services;
 public class BookerManagementService : IBookerManagementService
@@ -40,17 +41,22 @@ public class BookerManagementService : IBookerManagementService
         foreach (var court in _courtRepository.GetFromUrbaId(urba.Id))
         {
             // Get all valid hours for this court:
-            var validHours = _configurationRepository.GetAllFromCourtId(court.Id).ToList();
-            yield return new BookerResponse
+            var allBooks = _schedulerRepository.GetBooksByCourtId(court.Id);
+            foreach (var book in allBooks)
             {
-                CourtId = court.Id,
-                CourtName = court.name,
-                    ClientName = "DBO.2.1.3",
-                    Duration = "1h",
+                DateTime date = DateTime.ParseExact(book.Day, "MM/dd/yyyy", null);
+                CultureInfo spanishCulture = new CultureInfo("es-ES");
+                yield return new BookerResponse
+                {
+                    Id = court.Id,
+                    CourtName = court.name,
+                    ClientName = _clientRepository.GetById(book.ClientId).name,
+                    Duration = book.Duration,
                     Hour = book.Time,
                     Type = court.type,
                     Weekday = spanishCulture.DateTimeFormat.GetDayName(date.DayOfWeek)
-            };
+                };
+            }
         }
     }
 
