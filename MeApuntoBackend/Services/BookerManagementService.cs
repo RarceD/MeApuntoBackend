@@ -45,7 +45,11 @@ public class BookerManagementService : IBookerManagementService
             {
                 CourtId = court.Id,
                 CourtName = court.name,
-                Scheduler = CheckHoursAreValidToBook(validHours, client.id, urba.advance_book)
+                    ClientName = "DBO.2.1.3",
+                    Duration = "1h",
+                    Hour = book.Time,
+                    Type = court.type,
+                    Weekday = spanishCulture.DateTimeFormat.GetDayName(date.DayOfWeek)
             };
         }
     }

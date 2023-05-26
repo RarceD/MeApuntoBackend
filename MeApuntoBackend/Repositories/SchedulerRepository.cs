@@ -41,4 +41,9 @@ public class SchedulerRepository : ISchedulerRepository
         List<SchedulerDb> ocupied = _context.Scheduler.Where(i => i.Day == day).ToList();
         return ocupied;
     }
+    public List<SchedulerDb> GetBooksByCourtId(int id)
+    {
+        List<SchedulerDb> ocupied = _context.Scheduler.Where(i => i.CourtId == id).ToList();
+        return ocupied;
+    }
 }

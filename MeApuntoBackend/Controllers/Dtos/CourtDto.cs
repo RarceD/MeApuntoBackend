@@ -4,7 +4,7 @@ public class CourtResponse
 {
     public class Timetable
     {
-        public string? Day { get; set; }
+        public int Day { get; set; }
         public string? Time { get; set; }
         public bool Valid { get; set; }
     }

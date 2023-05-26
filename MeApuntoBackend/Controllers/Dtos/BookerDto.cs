@@ -11,8 +11,13 @@
 
     public class BookerResponse
     {
-        public int CourtId { get; set; }
+        public int Id { get; set; }
+        public string? Weekday { get; set; }
+        public string? Hour { get; set; }
         public string? CourtName { get; set; }
+        public string? Duration { get; set; }
+        public string? ClientName { get; set; }
+        public int Type { get; set; }
         public List<BookSchedul>? Scheduler { get; set; }
     }
     public class BookSchedul

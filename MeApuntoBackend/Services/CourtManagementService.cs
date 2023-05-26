@@ -72,7 +72,7 @@ public class CourtManagementService : ICourtManagementService
             {
                 allTimetables.Add(new CourtResponse.Timetable()
                 {
-                    Day = t.Day.ToString(),
+                    Day = t.Day,
                     Time = c.ValidHour,
                     Valid = true,
                 });
