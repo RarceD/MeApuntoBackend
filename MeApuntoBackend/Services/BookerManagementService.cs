@@ -52,7 +52,8 @@ public class BookerManagementService : IBookerManagementService
                 DateTime date = DateTime.ParseExact(book.Day ?? string.Empty, "dd/MM/yyyy", null);
                 yield return new BookerResponse
                 {
-                    Id = court.Id,
+                    Id = book.Id,
+                    ClientId = book.ClientId,
                     CourtName = court.name,
                     ClientName = _clientRepository.GetById(book.ClientId).name,
                     Duration = book.Duration,
@@ -82,17 +83,9 @@ public class BookerManagementService : IBookerManagementService
     public bool DeleteBook(int clientId, int bookId)
     {
         var scheduler = _schedulerRepository.GetById(bookId);
-        var book = _bookerRepository.GetAll()
-            .Where(i => i.client_id == clientId &&
-            i.court_id == scheduler.CourtId &&
-            i.time_book == scheduler.Time &&
-            i.Day == scheduler.Day
-            ).FirstOrDefault();
         try
         {
             _schedulerRepository.Remove(scheduler);
-            if (book == null) return false;
-            _bookerRepository.Remove(book);
             string logString = $"ClientId:{clientId} has delete book for {scheduler.CourtId} - {scheduler.Day} - {scheduler.Time}";
             _logger.LogWarning(logString);
             return true;

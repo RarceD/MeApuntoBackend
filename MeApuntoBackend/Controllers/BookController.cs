@@ -51,8 +51,7 @@ public class BookController : GenericController
     public ActionResult Delete(BookerDto input)
     {
         if (!CheckUserTokenId(input.Token ?? string.Empty, input.Id)) return NoContent();
-        int bookId = 123;
-        var success = _bookerManagementService.DeleteBook(input.Id, bookId);
+        var success = _bookerManagementService.DeleteBook(input.Id, input.BookId);
         if (success)
         {
             _logger.LogWarning($"ClientId: {input.Id} delete book for courtId:{input.CourtId} for {input.Time}-{input.Day}");
