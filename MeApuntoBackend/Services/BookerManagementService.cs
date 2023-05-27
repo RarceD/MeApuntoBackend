@@ -1,4 +1,5 @@
-﻿using MeApuntoBackend.Controllers.Dtos;
+﻿using MeApuntoBackend.Controllers;
+using MeApuntoBackend.Controllers.Dtos;
 using MeApuntoBackend.Models;
 using MeApuntoBackend.Repositories;
 using System.Globalization;
@@ -14,12 +15,15 @@ public class BookerManagementService : IBookerManagementService
     private readonly IConfigurationRepository _configurationRepository;
     private readonly ICourtRepository _courtRepository;
     private readonly IBookerRepository _bookerRepository;
+    private readonly ILogger<BookerManagementService> _logger;
+    private static CultureInfo spanishCulture = new CultureInfo("es-ES");
     public BookerManagementService(IClientRepository clientRepository,
           IUrbaRepository urbaRepository,
           ISchedulerRepository schedulerRepository,
           IConfigurationRepository configurationRepository,
           IBookerRepository bookerRepository,
-          ICourtRepository courtRepository)
+          ICourtRepository courtRepository,
+          ILogger<BookerManagementService> logger)
     {
         _clientRepository = clientRepository;
         _urbaRepository = urbaRepository;
@@ -27,6 +31,7 @@ public class BookerManagementService : IBookerManagementService
         _configurationRepository = configurationRepository;
         _courtRepository = courtRepository;
         _bookerRepository = bookerRepository;
+        _logger = logger;
     }
 
     #endregion
@@ -44,11 +49,11 @@ public class BookerManagementService : IBookerManagementService
             var allBooks = _schedulerRepository.GetBooksByCourtId(court.Id);
             foreach (var book in allBooks)
             {
-                DateTime date = DateTime.ParseExact(book.Day, "MM/dd/yyyy", null);
-                CultureInfo spanishCulture = new CultureInfo("es-ES");
+                DateTime date = DateTime.ParseExact(book.Day ?? string.Empty, "dd/MM/yyyy", null);
                 yield return new BookerResponse
                 {
-                    Id = court.Id,
+                    Id = book.Id,
+                    ClientId = book.ClientId,
                     CourtName = court.name,
                     ClientName = _clientRepository.GetById(book.ClientId).name,
                     Duration = book.Duration,
@@ -72,27 +77,24 @@ public class BookerManagementService : IBookerManagementService
         if (!ValidDayHour(newBook.Day ?? string.Empty, newBook.Time ?? string.Empty, urba.advance_book, newBook.Id)) return false;
 
         // Finally make the book:
-        return MakeBook(clienteWhoBook.id, newBook.CourtId, newBook.Time ?? string.Empty, newBook.Day ?? string.Empty);
+        return MakeBook(clienteWhoBook.id, newBook.CourtId, newBook.Time ?? string.Empty, newBook.Day.ToString());
     }
 
     public bool DeleteBook(int clientId, int bookId)
     {
         var scheduler = _schedulerRepository.GetById(bookId);
-        var book = _bookerRepository.GetAll()
-            .Where(i => i.client_id == clientId &&
-            i.court_id == scheduler.CourtId &&
-            i.time_book == scheduler.Time &&
-            i.Day == scheduler.Day
-            ).FirstOrDefault();
         try
         {
             _schedulerRepository.Remove(scheduler);
-            if (book == null) return false;
-            _bookerRepository.Remove(book);
+            string logString = $"ClientId:{clientId} has delete book for {scheduler.CourtId} - {scheduler.Day} - {scheduler.Time}";
+            _logger.LogWarning(logString);
             return true;
         }
-        catch (Exception)
+        catch (Exception e)
         {
+            string logString = $"ClientId:{clientId} has NOT delete  for {scheduler.CourtId} - {scheduler.Day} - {scheduler.Time}";
+            _logger.LogWarning(logString);
+            _logger.LogError($"Exception launch:{e.Message}");
             return false;
         }
     }
@@ -139,12 +141,14 @@ public class BookerManagementService : IBookerManagementService
             // If I have previously book same court break
             if (b.ClientId == clientId)
             {
+                _logger.LogWarning("This client has book same court for same day");
                 if (b.CourtId == courtId)
                     return false;
             }
             else
             {
                 // If other client has previously book same court SAME hour:
+                _logger.LogWarning("Other client has book same court for same day");
                 if (b.CourtId == courtId && b.Time == hourToBook)
                     return false;
             }
@@ -161,10 +165,13 @@ public class BookerManagementService : IBookerManagementService
         {
             _bookerRepository.Add(newRegister);
             _schedulerRepository.Add(newBook);
+            _logger.LogWarning($"ClientId:{clientId} has book for {courtId} - {dayToBook} - {hourToBook}");
             return true;
         }
-        catch (Exception)
+        catch (Exception e)
         {
+            _logger.LogError($"ClientId:{clientId} has NOT book for {courtId} - {dayToBook} - {hourToBook}");
+            _logger.LogError($"Exception launch:{e.Message}");
             return false;
         }
     }

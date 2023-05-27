@@ -1,3 +1,4 @@
+using MeApuntoBackend.Controllers.Dtos;
 using MeApuntoBackend.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,4 +12,9 @@ public class GenericController : ControllerBase
     }
     protected bool CheckUserTokenId(string token, int id) =>
         _clientManagementService.CheckUserTokenId(token, id);
+    protected ActionResult Success() =>
+        Ok(new GenericResponseDto() { Error = false });
+    protected ActionResult Error() =>
+        Ok(new GenericResponseDto() { Error = true });
+
 }
