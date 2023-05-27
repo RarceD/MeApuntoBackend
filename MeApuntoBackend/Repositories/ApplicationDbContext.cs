@@ -9,7 +9,6 @@ public class ApplicationDbContext : DbContext
     {
 
     }
-    public DbSet<BookerDb> Booker { get; set; }
     public DbSet<ClientDb> Clients { get; set; }
     public DbSet<CourtDb> Courts { get; set; }
     public DbSet<NormativeDb> Normative { get; set; }

@@ -4,7 +4,6 @@ using System.Timers;
 namespace MeApuntoBackend.Services;
 public class PeriodicTaskService : BackgroundService
 {
-    private static IBookerRepository? _bookerRepository;
     private static ISchedulerRepository? _schedulerRepository;
     private static System.Timers.Timer? _bookerTimer;
     private static IServiceProvider? _serviceProvider;
@@ -28,30 +27,10 @@ public class PeriodicTaskService : BackgroundService
         using (IServiceScope scope = _serviceProvider.CreateScope())
         {
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            _bookerRepository = new BookerRepository(dbContext);
             _schedulerRepository = new SchedulerRepository(dbContext);
-            ClearBookerTable();
             ClearScheduleTable();
         }
     }
-
-    private static void ClearBookerTable()
-    {
-        if ( _bookerRepository == null) return;
-        var allBooks = _bookerRepository.GetAll();
-
-        var yesterdayWeekday = (int)DateTime.Now.DayOfWeek - 1;
-        if (yesterdayWeekday < 0) yesterdayWeekday = 6;
-
-        var yestardayDay = DateTime.Now.AddDays(-1).ToShortDateString();
-
-        foreach (var booker in allBooks)
-        {
-            if (booker.weekday == yesterdayWeekday && booker.Day == yestardayDay)
-                _bookerRepository.Remove(booker);
-        }
-    }
-
     private static void ClearScheduleTable()
     {
         if ( _schedulerRepository == null) return;

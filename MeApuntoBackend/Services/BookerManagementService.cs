@@ -1,5 +1,4 @@
-﻿using MeApuntoBackend.Controllers;
-using MeApuntoBackend.Controllers.Dtos;
+﻿using MeApuntoBackend.Controllers.Dtos;
 using MeApuntoBackend.Models;
 using MeApuntoBackend.Repositories;
 using System.Globalization;
@@ -14,14 +13,12 @@ public class BookerManagementService : IBookerManagementService
     private readonly ISchedulerRepository _schedulerRepository;
     private readonly IConfigurationRepository _configurationRepository;
     private readonly ICourtRepository _courtRepository;
-    private readonly IBookerRepository _bookerRepository;
     private readonly ILogger<BookerManagementService> _logger;
     private static CultureInfo spanishCulture = new CultureInfo("es-ES");
     public BookerManagementService(IClientRepository clientRepository,
           IUrbaRepository urbaRepository,
           ISchedulerRepository schedulerRepository,
           IConfigurationRepository configurationRepository,
-          IBookerRepository bookerRepository,
           ICourtRepository courtRepository,
           ILogger<BookerManagementService> logger)
     {
@@ -30,7 +27,6 @@ public class BookerManagementService : IBookerManagementService
         _schedulerRepository = schedulerRepository;
         _configurationRepository = configurationRepository;
         _courtRepository = courtRepository;
-        _bookerRepository = bookerRepository;
         _logger = logger;
     }
 
@@ -77,7 +73,7 @@ public class BookerManagementService : IBookerManagementService
         if (!ValidDayHour(newBook.Day ?? string.Empty, newBook.Time ?? string.Empty, urba.advance_book, newBook.Id)) return false;
 
         // Finally make the book:
-        return MakeBook(clienteWhoBook.id, newBook.CourtId, newBook.Time ?? string.Empty, newBook.Day.ToString());
+        return MakeBook(clienteWhoBook.id, newBook.CourtId, newBook.Time ?? string.Empty, newBook.Day ?? string.Empty);
     }
 
     public bool DeleteBook(int clientId, int bookId)
@@ -158,14 +154,10 @@ public class BookerManagementService : IBookerManagementService
     }
     private bool MakeBook(int clientId, int courtId, string hourToBook, string dayToBook)
     {
-        var bookDay = Convert.ToDateTime(dayToBook);
         var newBook = new SchedulerDb() { ClientId = clientId, CourtId = courtId, Time = hourToBook, Day = dayToBook };
-        var newRegister = new BookerDb() { client_id = clientId, court_id = courtId, Day = dayToBook, weekday = (int)bookDay.DayOfWeek, duration = "1", time_book = hourToBook };
         try
         {
-            _bookerRepository.Add(newRegister);
             _schedulerRepository.Add(newBook);
-            _logger.LogWarning($"ClientId:{clientId} has book for {courtId} - {dayToBook} - {hourToBook}");
             return true;
         }
         catch (Exception e)

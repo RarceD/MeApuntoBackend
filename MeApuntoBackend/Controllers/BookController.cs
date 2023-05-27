@@ -37,12 +37,12 @@ public class BookController : GenericController
         bool success = _bookerManagementService.MakeABook(input);
         if (success)
         {
-            _logger.LogWarning($"ClientId: {input.Id} has successfully make a book in courtId:{input.CourtId} for {input.Time}-{input.Day}");
+            _logger.LogWarning($"[BOOK] clientId: {input.Id} has successfully make a book in courtId:{input.CourtId} for {input.Time}-{input.Day}");
             return Success();
         }
         else
         {
-            _logger.LogWarning($"ClientId: {input.Id} has ERROR making book courtId:{input.CourtId} for {input.Time}-{input.Day}");
+            _logger.LogWarning($"[BOOK] clientId: {input.Id} has ERROR making book courtId:{input.CourtId} for {input.Time}-{input.Day}");
             return Error();
         }
     }
@@ -54,13 +54,13 @@ public class BookController : GenericController
         var success = _bookerManagementService.DeleteBook(input.Id, input.BookId);
         if (success)
         {
-            _logger.LogWarning($"ClientId: {input.Id} delete book for courtId:{input.CourtId} for {input.Time}-{input.Day}");
+            _logger.LogWarning($"[BOOK] clientId: {input.Id} delete book for courtId:{input.CourtId} for {input.Time}-{input.Day}");
+            return Success();
         }
         else
         {
-            _logger.LogError($"ClientId: {input.Id} ERROR deleting book for courtId:{input.CourtId} for {input.Time}-{input.Day}");
+            _logger.LogError($"[BOOK] clientId: {input.Id} ERROR deleting book for courtId:{input.CourtId} for {input.Time}-{input.Day}");
+            return Error();
         }
-
-        return success ? Ok() : NoContent();
     }
 }

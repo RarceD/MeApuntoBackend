@@ -5,7 +5,7 @@ public class CourtDb
     public string? name { get; set; }
     public int urba_id { get; set; }
     public int type { get; set; }
-    public string valid_times { get; set; }
+    public string? valid_times { get; set; }
 }
 
 public enum CourtType

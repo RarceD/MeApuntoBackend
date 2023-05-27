@@ -79,7 +79,6 @@ namespace MeApuntoBackend
         private static void LoadRepositories(WebApplicationBuilder builder)
         {
             builder.Services.AddScoped<IClientRepository, ClientsRepository>();
-            builder.Services.AddScoped<IBookerRepository, BookerRepository>();
             builder.Services.AddScoped<IUrbaRepository, UrbaRepository>();
             builder.Services.AddScoped<INormativeRepository, NormativeRepository>();
             builder.Services.AddScoped<ICourtRepository, CourtRepository>();
