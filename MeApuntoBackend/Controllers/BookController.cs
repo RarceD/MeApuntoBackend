@@ -1,6 +1,7 @@
 using MeApuntoBackend.Controllers.Dtos;
 using MeApuntoBackend.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json.Nodes;
 
 namespace MeApuntoBackend.Controllers;
 
@@ -37,12 +38,12 @@ public class BookController : GenericController
         if (success)
         {
             _logger.LogWarning($"ClientId: {input.Id} has successfully make a book in courtId:{input.CourtId} for {input.Time}-{input.Day}");
-            return Ok();
+            return Success();
         }
         else
         {
             _logger.LogWarning($"ClientId: {input.Id} has ERROR making book courtId:{input.CourtId} for {input.Time}-{input.Day}");
-            return NoContent();
+            return Error();
         }
     }
 

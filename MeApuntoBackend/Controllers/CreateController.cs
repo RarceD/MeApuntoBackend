@@ -42,7 +42,6 @@ public class CreateController : ControllerBase
         // Create the user:
         var success = _loginManagementService.AddClient(input, urbaId);
         _logger.LogWarning("Create NEW user: " + input.User + " with pass: " + input.Pass);
-        if (success) return Ok();
-        return resp;
+        return success ? Ok() : resp;
     }
 }

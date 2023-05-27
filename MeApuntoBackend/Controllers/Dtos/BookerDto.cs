@@ -6,6 +6,7 @@
         public string? Token { get; set; }
         public int CourtId  { get; set; }
         public string? Time  { get; set; }
+        public string? Duration  { get; set; }
         public string? Day  { get; set; }
     }
 

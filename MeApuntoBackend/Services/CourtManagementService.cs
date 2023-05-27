@@ -71,6 +71,7 @@ public class CourtManagementService : ICourtManagementService
 
             var day = new CourtResponse.Timetable() { Day = t.Day };
             day.Availability = new List<CourtResponse.TimeAvailability>();
+            day.fullDay = t.Date.ToShortDateString();
             foreach (var c in timeDb)
             {
                 day.Availability.Add(new CourtResponse.TimeAvailability()
