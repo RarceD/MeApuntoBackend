@@ -68,15 +68,18 @@ public class CourtManagementService : ICourtManagementService
             var t = DateTime.Now.AddDays(today++);
             var timeDb = _configurationRepository.GetAllFromCourtId(courtId);
             if (timeDb == null) break;
+
+            var day = new CourtResponse.Timetable() { Day = t.Day };
+            day.Availability = new List<CourtResponse.TimeAvailability>();
             foreach (var c in timeDb)
             {
-                allTimetables.Add(new CourtResponse.Timetable()
+                day.Availability.Add(new CourtResponse.TimeAvailability()
                 {
-                    Day = t.Day,
                     Time = c.ValidHour,
-                    Valid = true,
+                    Valid = true
                 });
             }
+            allTimetables.Add(day);
 
         }
         return allTimetables;
