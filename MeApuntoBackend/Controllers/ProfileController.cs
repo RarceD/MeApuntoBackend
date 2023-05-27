@@ -31,7 +31,7 @@ public class ProfileController : GenericController
         var success = _clientManagementService.UpdateUserProfile(input);
         if (success)
         {
-            if (input.Username != "null") 
+            if (input.Username != string.Empty) 
             {
                 _logger.LogWarning("Client id: " + input.Id + " has change its username");
             }

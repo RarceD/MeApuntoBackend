@@ -105,7 +105,11 @@ public class ClientManagementService : IClientManagementService
         if (client == null) return false;
 
         // Update profile only if changed:
-        if (profile.Username != string.Empty) client.username = profile.Username;
+        if (profile.Username != string.Empty)
+        {
+            // Remove spaces in mail change
+            client.username = profile.Username?.Replace(" ", "");
+        }
         if (profile.Password != string.Empty) client.pass = profile.Password;
 
         // Update profile:
