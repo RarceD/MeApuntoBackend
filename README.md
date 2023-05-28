@@ -1,10 +1,16 @@
 # MeApunto.Online
 
-## What it is?
+## What it is
 This is the second version of an existing backend wrote in flask (python), the first one has performance problems and was not
 scalable enough for all the clients requirements.
 
 That's why the refactor starts on db and ends with new endpoints with more functionallity;
+
+## Stuff that should be done: 
+
+- Cache service to prevent getting courts and urbas information allways.
+- Migration script to copy one sqlite3 to other following schemas.
+
 
 ## Technology used:
 | System |  Technology  | 

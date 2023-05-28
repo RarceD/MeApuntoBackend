@@ -70,58 +70,34 @@ public class BookerManagementService : IBookerManagementService
         if (urba == null) return false;
 
         // Validate time and hour:
-        if (!ValidDayHour(newBook.Day ?? string.Empty, newBook.Time ?? string.Empty, urba.advance_book, newBook.Id)) return false;
+        if (!ValidDayHour(newBook.Day ?? string.Empty, newBook.Time ?? string.Empty, newBook.CourtId, newBook.Id)) return false;
 
         // Finally make the book:
-        return MakeBook(clienteWhoBook.id, newBook.CourtId, newBook.Time ?? string.Empty, newBook.Day ?? string.Empty);
+        return MakeBook(newBook);
     }
 
     public bool DeleteBook(int clientId, int bookId)
     {
         var scheduler = _schedulerRepository.GetById(bookId);
+        if (scheduler.ClientId != clientId)
+        {
+            _logger.LogError($"[BOOK] client {clientId} it trying to delete other book from client: {scheduler.ClientId}");
+            return false;   
+        }
         try
         {
             _schedulerRepository.Remove(scheduler);
-            string logString = $"ClientId:{clientId} has delete book for {scheduler.CourtId} - {scheduler.Day} - {scheduler.Time}";
+            string logString = $"[BOOK] clientId:{clientId} has delete book for court:{scheduler.CourtId} - {scheduler.Day} - {scheduler.Time}";
             _logger.LogWarning(logString);
             return true;
         }
         catch (Exception e)
         {
-            string logString = $"ClientId:{clientId} has NOT delete  for {scheduler.CourtId} - {scheduler.Day} - {scheduler.Time}";
-            _logger.LogWarning(logString);
+            _logger.LogError($"[BOOK] clientId:{clientId} has NOT delete for court:{scheduler.CourtId} - {scheduler.Day} - {scheduler.Time}");
             _logger.LogError($"Exception launch:{e.Message}");
             return false;
         }
     }
-
-    private List<BookSchedul> CheckHoursAreValidToBook(List<ConfigurationDb> hours, int clientId, int advanceBook)
-    {
-        List<BookSchedul> bookScheduls = new List<BookSchedul>();
-        for (int d = 0; d <= advanceBook; d++)
-        {
-            var day = DateTime.Now.AddDays(d).Date.ToShortDateString();
-
-            // Get all the books for the day x
-            foreach (var h in hours)
-                bookScheduls.Add(new BookSchedul()
-                {
-                    Available = true,
-                    HourAvailable = h.ValidHour,
-                    Day = day
-                });
-
-            // Check if they are really not valid:
-            List<SchedulerDb> invalidHours = _schedulerRepository.GetBookInDay(day);
-            foreach (var b in bookScheduls)
-            {
-                if (invalidHours.Select(i => i.Time).Contains(b.HourAvailable))
-                    b.Available = false;
-            }
-        }
-        return bookScheduls;
-    }
-
     private bool ValidDayHour(string dayToBook, string hourToBook, int courtId, int clientId)
     {
         List<ConfigurationDb> validHours = _configurationRepository.GetAllFromCourtId(courtId);
@@ -137,7 +113,7 @@ public class BookerManagementService : IBookerManagementService
             // If I have previously book same court break
             if (b.ClientId == clientId)
             {
-                _logger.LogWarning("This client has book same court for same day");
+                _logger.LogWarning($"[BOOK] client {clientId} has book same court for same day");
                 if (b.CourtId == courtId)
                     return false;
             }
@@ -152,18 +128,24 @@ public class BookerManagementService : IBookerManagementService
         }
         return true;
     }
-    private bool MakeBook(int clientId, int courtId, string hourToBook, string dayToBook)
+    private bool MakeBook(BookerDto book)
     {
-        var newBook = new SchedulerDb() { ClientId = clientId, CourtId = courtId, Time = hourToBook, Day = dayToBook };
+        var newBook = new SchedulerDb() {
+            ClientId = book.Id,
+            CourtId = book.CourtId,
+            Time = book.Time, 
+            Day = book.Day,
+            Duration = book.Duration };
         try
         {
             _schedulerRepository.Add(newBook);
+            _logger.LogError($"[BOOK] ClientId:{newBook.ClientId} has book for {newBook.CourtId} - {newBook.Time} - {newBook.Day}");
             return true;
         }
         catch (Exception e)
         {
-            _logger.LogError($"ClientId:{clientId} has NOT book for {courtId} - {dayToBook} - {hourToBook}");
-            _logger.LogError($"Exception launch:{e.Message}");
+            _logger.LogError($"[BOOK] ClientId:{newBook.ClientId} has NOT book for {newBook.CourtId} - {newBook.Time} - {newBook.Day}");
+            _logger.LogError($"[BOOK] Exception launch:{e.Message}");
             return false;
         }
     }

@@ -54,7 +54,6 @@ public class BookController : GenericController
         var success = _bookerManagementService.DeleteBook(input.Id, input.BookId);
         if (success)
         {
-            _logger.LogWarning($"[BOOK] clientId: {input.Id} delete book for courtId:{input.CourtId} for {input.Time}-{input.Day}");
             return Success();
         }
         else
