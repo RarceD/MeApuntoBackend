@@ -103,7 +103,20 @@ public class CourtManagementService : ICourtManagementService
 
         }
         CheckAvailability(allTimetables, courtId);
+        MakeUnavailableHoursIfExpired(allTimetables);
         return allTimetables;
+    }
+
+    private void MakeUnavailableHoursIfExpired(List<CourtResponse.Timetable> allTimetables)
+    {
+        DateTime now = DateTime.Now;
+        var currentHour = int.Parse(now.ToString("HH"));
+        allTimetables 
+            .Where(timetable => timetable.Day == now.Day)
+            .SelectMany(timetable => timetable.Availability)
+            .Where(t => currentHour >= int.Parse(t.Time.Split(":")[0]))
+            .ToList()
+            .ForEach(t => t.Valid = false);
     }
 
     private void CheckAvailability(List<CourtResponse.Timetable> allTimetables, int courtId)
