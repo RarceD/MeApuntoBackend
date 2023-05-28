@@ -119,10 +119,22 @@ public class BookerManagementService : IBookerManagementService
             }
             else
             {
+                // TODO: Verify that booking more than one hours works:
+                if (newBook.Duration != DurationType.ONE_HOUR.ToString())
+                {
+                    // Check that then next hour, for example book at 13:00 two fucking hours so 14:00 must be free
+                    var hourToVerifyIsFree = (int.Parse(newBook.Time.Split(":")[0]) + 1).ToString() + ":00";
+                    if (bookThisDay.FirstOrDefault(t => t.Time == hourToVerifyIsFree) != null)
+                    {
+                        return false;
+                    }
+                }
                 // If other client has previously book same court SAME hour:
-                _logger.LogWarning("Other client has book same court for same day");
                 if (b.CourtId == newBook.CourtId && b.Time == newBook.Time)
+                {
+                    _logger.LogWarning("Other client has book same court for same day");
                     return false;
+                }
             }
 
         }
@@ -130,17 +142,24 @@ public class BookerManagementService : IBookerManagementService
     }
     private bool MakeBook(BookerDto book)
     {
-        var newBook = new SchedulerDb()
-        {
-            ClientId = book.Id,
-            CourtId = book.CourtId,
-            Time = book.Time,
-            Day = book.Day,
-            Duration = book.Duration
-        };
+        SchedulerDb newBook = ConvertBookerToScheduler(book);
         try
         {
-            _schedulerRepository.Add(newBook);
+
+            if (newBook.Duration == DurationType.ONE_HOUR.ToString())
+            {
+                _schedulerRepository.Add(newBook);
+            }
+            else
+            {
+                // TODO: Must add ONE register BUT the occupied two hours must be done...
+                book.Duration = ((int)DurationType.ONE_HOUR).ToString();
+                newBook.Duration = ((int)DurationType.ONE_HOUR).ToString();
+                _schedulerRepository.Add(newBook);
+                book.Time = (int.Parse(book.Time.Split(":")[0]) + 1).ToString() + ":00";
+                _schedulerRepository.Add(ConvertBookerToScheduler(book));
+
+            }
             _logger.LogError($"[BOOK] ClientId:{newBook.ClientId} has book for {newBook.CourtId} - {newBook.Time} - {newBook.Day}");
             return true;
         }
@@ -150,5 +169,17 @@ public class BookerManagementService : IBookerManagementService
             _logger.LogError($"[BOOK] Exception launch:{e.Message}");
             return false;
         }
+    }
+
+    private static SchedulerDb ConvertBookerToScheduler(BookerDto book)
+    {
+        return new SchedulerDb()
+        {
+            ClientId = book.Id,
+            CourtId = book.CourtId,
+            Time = book.Time,
+            Day = book.Day,
+            Duration = book.Duration
+        };
     }
 }
