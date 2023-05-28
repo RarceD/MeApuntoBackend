@@ -26,6 +26,10 @@ public class BookController : GenericController
         var response = new List<BookerResponse>();
         if (!CheckUserTokenId(token, id)) return response;
         var allBooks = _bookerManagementService.GetBooks(id);
+
+        // Order according weekday:
+        allBooks = allBooks.OrderBy(i => i.Weekday);
+
         if (allBooks == null) return response;
         return allBooks;
     }

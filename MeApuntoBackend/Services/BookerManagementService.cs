@@ -70,7 +70,7 @@ public class BookerManagementService : IBookerManagementService
         if (urba == null) return false;
 
         // Validate time and hour:
-        if (!ValidDayHour(newBook.Day ?? string.Empty, newBook.Time ?? string.Empty, newBook.CourtId, newBook.Id)) return false;
+        if (!ValidDayHour(newBook)) return false;
 
         // Finally make the book:
         return MakeBook(newBook);
@@ -82,7 +82,7 @@ public class BookerManagementService : IBookerManagementService
         if (scheduler.ClientId != clientId)
         {
             _logger.LogError($"[BOOK] client {clientId} it trying to delete other book from client: {scheduler.ClientId}");
-            return false;   
+            return false;
         }
         try
         {
@@ -98,30 +98,30 @@ public class BookerManagementService : IBookerManagementService
             return false;
         }
     }
-    private bool ValidDayHour(string dayToBook, string hourToBook, int courtId, int clientId)
+    private bool ValidDayHour(BookerDto newBook)
     {
-        List<ConfigurationDb> validHours = _configurationRepository.GetAllFromCourtId(courtId);
+        List<ConfigurationDb> validHours = _configurationRepository.GetAllFromCourtId(newBook.CourtId);
         if (validHours.Count() == 0) return false;
 
         // First check if hour is valid according configuration:
-        if (!validHours.Select(i => i.ValidHour).Contains(hourToBook)) return false;
+        if (!validHours.Select(i => i.ValidHour).Contains(newBook.Time)) return false;
 
         // Check someone has previously book same hour
-        var bookThisDay = _schedulerRepository.GetBookInDay(dayToBook);
+        var bookThisDay = _schedulerRepository.GetBookInDay(newBook.Day);
         foreach (var b in bookThisDay)
         {
             // If I have previously book same court break
-            if (b.ClientId == clientId)
+            if (b.ClientId == newBook.Id)
             {
-                _logger.LogWarning($"[BOOK] client {clientId} has book same court for same day");
-                if (b.CourtId == courtId)
+                _logger.LogWarning($"[BOOK] client {newBook.Id} has book same court for same day");
+                if (b.CourtId == newBook.Id)
                     return false;
             }
             else
             {
                 // If other client has previously book same court SAME hour:
                 _logger.LogWarning("Other client has book same court for same day");
-                if (b.CourtId == courtId && b.Time == hourToBook)
+                if (b.CourtId == newBook.CourtId && b.Time == newBook.Time)
                     return false;
             }
 
@@ -130,12 +130,14 @@ public class BookerManagementService : IBookerManagementService
     }
     private bool MakeBook(BookerDto book)
     {
-        var newBook = new SchedulerDb() {
+        var newBook = new SchedulerDb()
+        {
             ClientId = book.Id,
             CourtId = book.CourtId,
-            Time = book.Time, 
+            Time = book.Time,
             Day = book.Day,
-            Duration = book.Duration };
+            Duration = book.Duration
+        };
         try
         {
             _schedulerRepository.Add(newBook);
