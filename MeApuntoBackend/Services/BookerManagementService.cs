@@ -45,7 +45,7 @@ public class BookerManagementService : IBookerManagementService
             var allBooks = _schedulerRepository.GetBooksByCourtId(court.Id);
             foreach (var book in allBooks)
             {
-                DateTime date = DateTime.ParseExact(book.Day ?? string.Empty, "dd/MM/yyyy", null);
+                DateTime date = GetDateTimeForToday(book);
                 yield return new BookerResponse
                 {
                     Id = book.Id,
@@ -69,11 +69,14 @@ public class BookerManagementService : IBookerManagementService
         UrbaDb urba = _urbaRepository.GetById(clienteWhoBook.urba_id);
         if (urba == null) return false;
 
-        // Validate time and hour:
-        if (!ValidDayHour(newBook)) return false;
-
-        // Finally make the book:
-        return MakeBook(newBook);
+        // TODO: In case at 12:00 two fucking clients try to book same hour/day
+        lock (this)
+        {
+            // Validate time and hour:
+            if (!ValidDayHour(newBook)) return false;
+            // Finally make the book:
+            return MakeBook(newBook);
+        }
     }
 
     public bool DeleteBook(int clientId, int bookId)
@@ -98,6 +101,8 @@ public class BookerManagementService : IBookerManagementService
             return false;
         }
     }
+
+    #region Private Method
     private bool ValidDayHour(BookerDto newBook)
     {
         List<ConfigurationDb> validHours = _configurationRepository.GetAllFromCourtId(newBook.CourtId);
@@ -146,7 +151,7 @@ public class BookerManagementService : IBookerManagementService
         try
         {
 
-            if (newBook.Duration == DurationType.ONE_HOUR.ToString())
+            if (newBook.Duration == ((int)DurationType.ONE_HOUR).ToString())
             {
                 _schedulerRepository.Add(newBook);
             }
@@ -158,7 +163,6 @@ public class BookerManagementService : IBookerManagementService
                 _schedulerRepository.Add(newBook);
                 book.Time = (int.Parse(book.Time.Split(":")[0]) + 1).ToString() + ":00";
                 _schedulerRepository.Add(ConvertBookerToScheduler(book));
-
             }
             _logger.LogError($"[BOOK] ClientId:{newBook.ClientId} has book for {newBook.CourtId} - {newBook.Time} - {newBook.Day}");
             return true;
@@ -170,7 +174,6 @@ public class BookerManagementService : IBookerManagementService
             return false;
         }
     }
-
     private static SchedulerDb ConvertBookerToScheduler(BookerDto book)
     {
         return new SchedulerDb()
@@ -182,4 +185,21 @@ public class BookerManagementService : IBookerManagementService
             Duration = book.Duration
         };
     }
+    private static DateTime GetDateTimeForToday(SchedulerDb book)
+    {
+        DateTime date = new();
+        // This shit is necessary because of linux/windows changes on time formatting
+        try
+        {
+            date = DateTime.ParseExact(book.Day ?? string.Empty, "dd/MM/yyyy", null);
+        }
+        catch
+        {
+            date = DateTime.Parse(book.Day ?? string.Empty);
+        }
+
+        return date;
+    }
+
+    #endregion
 }
