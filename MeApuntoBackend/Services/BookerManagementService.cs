@@ -15,10 +15,12 @@ public class BookerManagementService : IBookerManagementService
     private readonly ICourtRepository _courtRepository;
     private readonly ILogger<BookerManagementService> _logger;
     private static CultureInfo spanishCulture = new CultureInfo("es-ES");
+    private readonly IMailService _mailService;
     public BookerManagementService(IClientRepository clientRepository,
           IUrbaRepository urbaRepository,
           ISchedulerRepository schedulerRepository,
           IConfigurationRepository configurationRepository,
+          IMailService mailService,
           ICourtRepository courtRepository,
           ILogger<BookerManagementService> logger)
     {
@@ -28,6 +30,7 @@ public class BookerManagementService : IBookerManagementService
         _configurationRepository = configurationRepository;
         _courtRepository = courtRepository;
         _logger = logger;
+        _mailService = mailService;
     }
 
     #endregion
@@ -75,7 +78,7 @@ public class BookerManagementService : IBookerManagementService
             // Validate time and hour:
             if (!ValidDayHour(newBook)) return false;
             // Finally make the book:
-            return MakeBook(newBook);
+            return MakeBook(newBook, clienteWhoBook.username);
         }
     }
 
@@ -90,6 +93,13 @@ public class BookerManagementService : IBookerManagementService
         try
         {
             _schedulerRepository.Remove(scheduler);
+
+            var email = _clientRepository.GetById(clientId).username;
+            if (email != null)
+            {
+                SendDeniedEmail(email);
+            }
+
             string logString = $"[BOOK] clientId:{clientId} has delete book for court:{scheduler.CourtId} - {scheduler.Day} - {scheduler.Time}";
             _logger.LogWarning(logString);
             return true;
@@ -145,7 +155,7 @@ public class BookerManagementService : IBookerManagementService
         }
         return true;
     }
-    private bool MakeBook(BookerDto book)
+    private bool MakeBook(BookerDto book, string emailToSend)
     {
         SchedulerDb newBook = ConvertBookerToScheduler(book);
         try
@@ -164,6 +174,8 @@ public class BookerManagementService : IBookerManagementService
                 book.Time = (int.Parse(book.Time.Split(":")[0]) + 1).ToString() + ":00";
                 _schedulerRepository.Add(ConvertBookerToScheduler(book));
             }
+
+            SendConfirmationEmail(emailToSend);
             _logger.LogError($"[BOOK] ClientId:{newBook.ClientId} has book for {newBook.CourtId} - {newBook.Time} - {newBook.Day}");
             return true;
         }
@@ -174,6 +186,37 @@ public class BookerManagementService : IBookerManagementService
             return false;
         }
     }
+
+    private void SendConfirmationEmail(string emailToSend)
+    {
+        try
+        {
+            // TODO : Multi line string in emails
+            // https://stackoverflow.com/questions/22067168/send-multiple-textbox-values-in-mail-body-using-smtp
+            string title = "[MEAPUNTO.ONLINE] Reserva de Pista";
+            string content = "Su reserva ha sido llevada a cabo con exito.Disfrute de su partida.";
+            _mailService.SendEmail(emailToSend, title, content);
+        }
+        catch (Exception e)
+        {
+            _logger.LogWarning($"[BOOK] Email ERROR" + e.Message);
+        }
+    }
+    private void SendDeniedEmail(string emailToSend)
+    {
+        try
+        {
+            // TODO : Multi line string in emails
+            string title = "[MEAPUNTO.ONLINE] Cancelación Reserva";
+            string content = "Saludos, su reserva ha sido cancelada con éxito. Un saludo";
+            _mailService.SendEmail(emailToSend, title, content);
+        }
+        catch (Exception e)
+        {
+            _logger.LogWarning($"[BOOK] Email ERROR" + e.Message);
+        }
+    }
+
     private static SchedulerDb ConvertBookerToScheduler(BookerDto book)
     {
         return new SchedulerDb()
