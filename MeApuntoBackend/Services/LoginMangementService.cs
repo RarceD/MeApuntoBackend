@@ -10,6 +10,8 @@ public class ClientManagementService : IClientManagementService
     private readonly IMailService _mailService;
     private readonly ILogger<ClientManagementService> _logger;
 
+    private const string FORGET_PASS_TITLE = "[MEAPUNTO.ONLINE] Recuperación de contraseña";
+
     public ClientManagementService(
         ILogger<ClientManagementService> logger,
         IClientRepository clientRepository,
@@ -140,15 +142,18 @@ public class ClientManagementService : IClientManagementService
         if (client == null) return false;
 
         // Generate new pass:
-        client.pass = Utils.GetMD5(
-            new Random().Next(0, 1000).ToString());
+        var rawPass = new Random().Next(1000, 5000).ToString();
+        client.pass = Utils.GetMD5(rawPass).ToLower();
 
         // Update db:
         _clientRepository.Update(client);
 
-        // Send Email
-        _mailService.SendEmail(client.username ?? string.Empty, "galletas", "contenido");
-
+        if (client.username != null)
+        {
+            string mailContent = $"Se ha restaurado su contraseña, para acceder su correo es: {client.username} y su constraseña {rawPass}";
+            _mailService.SendEmail(client.username, FORGET_PASS_TITLE, mailContent);
+            return true;
+        }
         return false;
     }
 }
