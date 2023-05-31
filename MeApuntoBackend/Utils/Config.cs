@@ -3,4 +3,6 @@
     public const string EMAIL_SOURCE = "";
     public const string HOST = "";
     public const string PASS = "";
+    public const string PUBLIC_URL = "";
+    public static Dictionary<string, int> URBA_CODES = new();
 }
