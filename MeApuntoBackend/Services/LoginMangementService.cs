@@ -1,6 +1,8 @@
 ﻿using MeApuntoBackend.Controllers.Dtos;
 using MeApuntoBackend.Models;
 using MeApuntoBackend.Repositories;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Security.Policy;
 
 namespace MeApuntoBackend.Services;
 public class ClientManagementService : IClientManagementService
@@ -155,5 +157,35 @@ public class ClientManagementService : IClientManagementService
             return true;
         }
         return false;
+    }
+
+    public string GenerateUrlForCode(string code)
+    {
+        var extracted = code.Split('.');
+        var urbaKey = GetUrbaKey(extracted[0]);
+        var house = extracted[1];
+        var floor = extracted[2];
+        var door = extracted[3];
+
+        // The code must be returned in base 64:
+        var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(code);
+        code = Convert.ToBase64String(plainTextBytes);
+
+        return Config.PUBLIC_URL + "/create?k=" + urbaKey + "&d=" + door + "&h=" + house + "&f=" + floor + "&i=" + code;
+    }
+
+
+    private string GetUrbaKey(string urbaCode)
+    {
+        var existCode = Config.URBA_CODES[urbaCode];
+        if (existCode != null)
+        {
+            var urba = _urbaRepository.GetById(existCode);
+            if (urba != null)
+            {
+                return urba.key;
+            }
+        }
+        return string.Empty;
     }
 }
