@@ -17,4 +17,13 @@
         public string? Token { get; set; }
         public bool Success { get; set; }
     }
+    public class RedirectDto
+    {
+        public string? Code { get; set; }
+    }
+    public class RedirectResponse
+    {
+        public bool Success { set; get; } = false;
+        public string? Url { get; set; }
+    }
 }

@@ -41,7 +41,35 @@ public class CreateController : ControllerBase
 
         // Create the user:
         var success = _loginManagementService.AddClient(input, urbaId);
-        _logger.LogWarning("Create NEW user: " + input.User + " with pass: " + input.Pass);
+        _logger.LogWarning("[CREATE] NEW user: " + input.User + " with pass: " + input.Pass);
         return success ? Ok() : resp;
     }
+
+    [HttpPost("redirect")]
+    public RedirectResponse SendCorrectUrl(RedirectDto input)
+    {
+        if (string.IsNullOrEmpty(input.Code)) return new RedirectResponse();
+        try
+        {
+            var base64EncodedBytes = System.Convert.FromBase64String(input.Code);
+            string code = System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
+
+            // verify other client does not have it:
+            if (!_loginManagementService.IsValidUserCode(code)) return new RedirectResponse();
+
+            _logger.LogWarning("[CREATE] with code: " + input.Code);
+            return new RedirectResponse()
+            {
+                Success = true,
+                Url = _loginManagementService.GenerateUrlForCode(code)
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning("[CREATE] ERROR with code: " + input.Code);
+            _logger.LogWarning("[CREATE] ERROR: " + ex.Message);
+            return new RedirectResponse();
+        }
+    }
+
 }

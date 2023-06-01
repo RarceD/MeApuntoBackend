@@ -46,4 +46,6 @@ public class SchedulerRepository : ISchedulerRepository
         List<SchedulerDb> ocupied = _context.Scheduler.Where(i => i.CourtId == id).ToList();
         return ocupied;
     }
+    public string ToPrint(SchedulerDb s) =>
+        $"CourtId:{s.CourtId} - ClientId: {s.ClientId} - Time:{s.Time} - {s.Day}";
 }

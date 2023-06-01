@@ -1,6 +1,8 @@
 ﻿using MeApuntoBackend.Controllers.Dtos;
 using MeApuntoBackend.Models;
 using MeApuntoBackend.Repositories;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Security.Policy;
 
 namespace MeApuntoBackend.Services;
 public class ClientManagementService : IClientManagementService
@@ -9,6 +11,8 @@ public class ClientManagementService : IClientManagementService
     private readonly IUrbaRepository _urbaRepository;
     private readonly IMailService _mailService;
     private readonly ILogger<ClientManagementService> _logger;
+
+    private const string FORGET_PASS_TITLE = "[MEAPUNTO.ONLINE] Recuperación de contraseña";
 
     public ClientManagementService(
         ILogger<ClientManagementService> logger,
@@ -140,15 +144,48 @@ public class ClientManagementService : IClientManagementService
         if (client == null) return false;
 
         // Generate new pass:
-        client.pass = Utils.GetMD5(
-            new Random().Next(0, 1000).ToString());
+        var rawPass = new Random().Next(1000, 5000).ToString();
+        client.pass = Utils.GetMD5(rawPass).ToLower();
 
         // Update db:
         _clientRepository.Update(client);
 
-        // Send Email
-        _mailService.SendEmail(client.username ?? string.Empty, "galletas", "contenido");
-
+        if (client.username != null)
+        {
+            string mailContent = $"Se ha restaurado su contraseña, para acceder su correo es: {client.username} y su constraseña {rawPass}";
+            _mailService.SendEmail(client.username, FORGET_PASS_TITLE, mailContent);
+            return true;
+        }
         return false;
+    }
+
+    public string GenerateUrlForCode(string code)
+    {
+        var extracted = code.Split('.');
+        var urbaKey = GetUrbaKey(extracted[0]);
+        var house = extracted[1];
+        var floor = extracted[2];
+        var door = extracted[3];
+
+        // The code must be returned in base 64:
+        var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(code);
+        code = Convert.ToBase64String(plainTextBytes);
+
+        return Config.PUBLIC_URL + "/create?k=" + urbaKey + "&d=" + door + "&h=" + house + "&f=" + floor + "&i=" + code;
+    }
+
+
+    private string GetUrbaKey(string urbaCode)
+    {
+        var existCode = Config.URBA_CODES[urbaCode];
+        if (existCode != null)
+        {
+            var urba = _urbaRepository.GetById(existCode);
+            if (urba != null)
+            {
+                return urba.key;
+            }
+        }
+        return string.Empty;
     }
 }
