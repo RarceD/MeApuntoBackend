@@ -1,20 +1,5 @@
 import sqlite3
-from datetime import datetime
-import threading
-
-DB_COPY_FROM = "fuck.db"
-DB_COPY_TO = "db_production.db"
-
-# Read first db:
-conn = sqlite3.connect(DB_COPY_FROM, check_same_thread=False)
-if not conn:
-    print("Error connecting")
-
-class Normative(object):
-    def __init__(self, title, text, urba):
-        self.title = title
-        self.text = text
-        self.urba = urba
+from dataDto import Normative, Client
 
 class NormativeMigration():
     def __init__(self, conn):
@@ -37,18 +22,6 @@ class NormativeMigration():
             cur = conn.cursor()
             cur.execute(sql_text, (n.title, n.text, n.urba, ))
             conn.commit()
-
-class Client(object):
-    def __init__(self, urba_id, name, username, passw, token, plays, floor, letter, house):
-        self.urba_id =urba_id 
-        self.name = name 
-        self.username =username 
-        self.passw = passw
-        self.token = token
-        self.plays = plays 
-        self.floor = floor 
-        self.letter = letter 
-        self.house = house 
 
 class ClientMigration():
     def __init__(self, conn):
@@ -73,22 +46,33 @@ class ClientMigration():
             conn.commit()
 
 
+DB_COPY_FROM = "fuck.db"
+DB_COPY_TO = "db_production.db"
+
+# Read first db:
+conn = sqlite3.connect(DB_COPY_FROM, check_same_thread=False)
+if not conn:
+    print("Error connecting: ", DB_COPY_FROM)
+
 # Migrate normative:
 """
 normative = NormativeMigration(conn)
 all_normatives = normative.getAll()
 conn = sqlite3.connect(DB_COPY_TO, check_same_thread=False)
 if not conn:
-    print("Error connecting")
+    print("Error connecting", DB_COPY_TO)
 normative.insert(conn, all_normatives)
 """
 
 # Migrate clients:
+"""
 clients = ClientMigration(conn)
 all_clients = clients.getAll()
-for c in all_clients:
-    print(c.name)
 conn = sqlite3.connect(DB_COPY_TO, check_same_thread=False)
 if not conn:
-    print("Error connecting")
+    print("Error connecting", DB_COPY_TO)
 clients.insert(conn, all_clients)
+"""
+
+if __name__ == "__main__":
+    pass
