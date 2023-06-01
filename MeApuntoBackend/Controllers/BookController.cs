@@ -28,7 +28,7 @@ public class BookController : GenericController
         var allBooks = _bookerManagementService.GetBooks(id);
 
         // Order according weekday:
-        allBooks = allBooks.OrderBy(i => i.Weekday);
+        allBooks = allBooks.OrderBy(i => i.Weekday).ThenBy(j => j.Hour);
 
         if (allBooks == null) return response;
         return allBooks;
