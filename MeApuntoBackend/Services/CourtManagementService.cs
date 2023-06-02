@@ -46,9 +46,9 @@ public class CourtManagementService : ICourtManagementService
         var urbaBd = _urbaRepository.GetById(client.urba_id);
         if (urbaBd == null) return courts;
 
-        return ConvertToCourtResponse(courtsDb, urbaBd.advance_book);
+        return ConvertToCourtResponse(courtsDb, urbaBd.advance_book, urbaBd.Id);
     }
-    private IEnumerable<CourtResponse> ConvertToCourtResponse(List<CourtDb> courtsDb, int advanceBook)
+    private IEnumerable<CourtResponse> ConvertToCourtResponse(List<CourtDb> courtsDb, int advanceBook, int urbaId)
     {
         foreach (var c in courtsDb)
         {
@@ -56,7 +56,7 @@ public class CourtManagementService : ICourtManagementService
             {
                 Id = c.Id,
                 Name = c.name,
-                Timetables = GetTimetablesFromCourt(c.Id, advanceBook),
+                Timetables = GetTimetablesFromCourt(c.Id, advanceBook, urbaId),
                 Type = c.type,
                 ValidTimes = c.valid_times
             };
@@ -74,15 +74,14 @@ public class CourtManagementService : ICourtManagementService
         }
     }
 
-    private List<CourtResponse.Timetable> GetTimetablesFromCourt(int courtId, int advanceBook)
+    private List<CourtResponse.Timetable> GetTimetablesFromCourt(int courtId, int advanceBook, int urbaId)
     {
         var allTimetables = new List<CourtResponse.Timetable>();
         int today = 0;
+        List<ConfigurationDb> timeDb = _configurationRepository.GetAllFromCourtId(urbaId).ToList();
         while (today < advanceBook)
         {
             var t = DateTime.Now.AddDays(today++);
-            List<ConfigurationDb> timeDb = _configurationRepository.GetAllFromCourtId(courtId).ToList();
-            if (timeDb == null) break;
 
             // order the maybe not ordered times:
             var tempOrder = timeDb.Select(i => i.ValidHour).ToList();
@@ -111,7 +110,7 @@ public class CourtManagementService : ICourtManagementService
     {
         DateTime now = DateTime.Now;
         var currentHour = int.Parse(now.ToString("HH"));
-        allTimetables 
+        allTimetables
             .Where(timetable => timetable.Day == now.Day)
             .SelectMany(timetable => timetable.Availability)
             .Where(t => currentHour >= int.Parse(t.Time.Split(":")[0]))
