@@ -1,0 +1,15 @@
+[Unit]
+Description=AppDeReservas Backend
+
+[Service]
+WorkingDirectory=/var/www/backend/build/
+ExecStart=/root/.dotnet/dotnet /var/www/backend/build/MeApuntoBackend.dll
+Restart=always
+
+# Restart service after 10 seconds if the dotnet service crashes:
+RestartSec=10
+KillSignal=SIGINT
+User=root
+
+[Install]
+WantedBy=multi-user.target
