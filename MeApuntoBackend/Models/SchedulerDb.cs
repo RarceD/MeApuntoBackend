@@ -7,4 +7,5 @@ public class SchedulerDb
     public string? Time { get; set; }
     public string? Day { get; set; }
     public string? Duration { get; set; }
+    public bool Show { get; set; }
 }

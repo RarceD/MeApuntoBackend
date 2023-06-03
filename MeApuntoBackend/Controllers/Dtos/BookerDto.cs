@@ -22,10 +22,11 @@
         public string? ClientName { get; set; }
         public int Type { get; set; }
     }
-    public enum DurationType
+    public static class DurationType
     {
-        ONE_HOUR = 1,
-        TWO_HOUR,
+        public static string ONE_HOUR = "1";
+        public static string ONE_HALF_HOUR = "1.5";
+        public static string TWO_HOURS = "2";
     }
 
 }

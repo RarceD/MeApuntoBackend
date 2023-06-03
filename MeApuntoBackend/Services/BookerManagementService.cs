@@ -44,8 +44,8 @@ public class BookerManagementService : IBookerManagementService
         // Get courts from this urba:
         foreach (var court in _courtRepository.GetFromUrbaId(urba.Id))
         {
-            // Get all valid hours for this court:
-            var allBooks = _schedulerRepository.GetBooksByCourtId(court.Id);
+            // Get all valid hours for this court that are visibles:
+            var allBooks = _schedulerRepository.GetBooksByCourtId(court.Id).Where(i => i.Show);
             foreach (var book in allBooks)
             {
                 DateTime date = GetDateTimeForToday(book);
@@ -76,7 +76,7 @@ public class BookerManagementService : IBookerManagementService
         lock (this)
         {
             // Validate time and hour:
-            if (!ValidDayHour(newBook)) return false;
+            if (!ValidDayHour(newBook, urba.Id)) return false;
             // Finally make the book:
             return MakeBook(newBook, clienteWhoBook.username);
         }
@@ -93,6 +93,22 @@ public class BookerManagementService : IBookerManagementService
         try
         {
             _schedulerRepository.Remove(scheduler);
+            if (scheduler.Duration == DurationType.ONE_HOUR)
+            {
+                scheduler = _schedulerRepository.GetById(bookId + 1);
+                _schedulerRepository.Remove(scheduler);
+            }
+            else if (scheduler.Duration == DurationType.ONE_HALF_HOUR)
+            {
+                scheduler = _schedulerRepository.GetById(bookId + 1);
+                _schedulerRepository.Remove(scheduler);
+                scheduler = _schedulerRepository.GetById(scheduler.Id + 1);
+                _schedulerRepository.Remove(scheduler);
+            }
+            else if (scheduler.Duration == DurationType.TWO_HOURS)
+            {
+                // TODO:
+            }
 
             var email = _clientRepository.GetById(clientId).username;
             if (email != null)
@@ -113,29 +129,28 @@ public class BookerManagementService : IBookerManagementService
     }
 
     #region Private Method
-    private bool ValidDayHour(BookerDto newBook)
+    private bool ValidDayHour(BookerDto newBook, int urbaId)
     {
-        List<ConfigurationDb> validHours = _configurationRepository.GetAllFromCourtId(newBook.CourtId);
+        List<ConfigurationDb> validHours = _configurationRepository.GetAllFromCourtId(urbaId);
         if (validHours.Count() == 0) return false;
 
         // First check if hour is valid according configuration:
         if (!validHours.Select(i => i.ValidHour).Contains(newBook.Time)) return false;
 
         // Check someone has previously book same hour
-        var bookThisDay = _schedulerRepository.GetBookInDay(newBook.Day);
+        var bookThisDay = _schedulerRepository.GetBookInDay(newBook.Day).Where(c => c.CourtId == newBook.CourtId).ToList();
         foreach (var b in bookThisDay)
         {
             // If I have previously book same court break
             if (b.ClientId == newBook.Id)
             {
                 _logger.LogWarning($"[BOOK] client {newBook.Id} has book same court for same day");
-                if (b.CourtId == newBook.Id)
-                    return false;
+                return false;
             }
             else
             {
                 // TODO: Verify that booking more than one hours works:
-                if (newBook.Duration != DurationType.ONE_HOUR.ToString())
+                if (newBook.Duration != DurationType.ONE_HOUR)
                 {
                     // Check that then next hour, for example book at 13:00 two fucking hours so 14:00 must be free
                     var hourToVerifyIsFree = (int.Parse(newBook.Time.Split(":")[0]) + 1).ToString() + ":00";
@@ -155,28 +170,58 @@ public class BookerManagementService : IBookerManagementService
         }
         return true;
     }
+    private string GetNextHour(string currentTime)
+    {
+        if (currentTime.Split(":")[1] == "30")
+        {
+            return (int.Parse(currentTime.Split(":")[0]) + 1).ToString() + ":00";
+        }
+        else
+        {
+            return currentTime.Split(":")[0] + ":30";
+        }
+    }
+
     private bool MakeBook(BookerDto book, string emailToSend)
     {
         SchedulerDb newBook = ConvertBookerToScheduler(book);
         try
         {
-
-            if (newBook.Duration == ((int)DurationType.ONE_HOUR).ToString())
+            // TODO: this is a piece of shit and should be refactor:
+            if (newBook.Duration == DurationType.ONE_HOUR)
             {
+                _schedulerRepository.Add(newBook);
+
+                // Second not visible 30 min after:
+                newBook = ConvertBookerToScheduler(book);
+                newBook.Show = false;
+                newBook.Time = GetNextHour(newBook.Time);
                 _schedulerRepository.Add(newBook);
             }
-            else
+            else if (newBook.Duration == DurationType.ONE_HALF_HOUR)
             {
-                // TODO: Must add ONE register BUT the occupied two hours must be done...
-                book.Duration = ((int)DurationType.ONE_HOUR).ToString();
-                newBook.Duration = ((int)DurationType.ONE_HOUR).ToString();
+                // Save first book visible:
                 _schedulerRepository.Add(newBook);
-                book.Time = (int.Parse(book.Time.Split(":")[0]) + 1).ToString() + ":00";
-                _schedulerRepository.Add(ConvertBookerToScheduler(book));
+
+                // Second not visible 30 min after:
+                newBook = ConvertBookerToScheduler(book);
+                newBook.Show = false;
+                newBook.Time = GetNextHour(newBook.Time);
+                _schedulerRepository.Add(newBook);
+
+                // Second not visible 30 min after:
+                newBook = ConvertBookerToScheduler(book);
+                newBook.Show = false;
+                newBook.Time = GetNextHour(GetNextHour(newBook.Time));
+                _schedulerRepository.Add(newBook);
+            }
+            else if (newBook.Duration == DurationType.TWO_HOURS)
+            {
+                // TODO
             }
 
             SendConfirmationEmail(emailToSend);
-            _logger.LogError($"[BOOK] ClientId:{newBook.ClientId} has book for {newBook.CourtId} - {newBook.Time} - {newBook.Day}");
+            _logger.LogError($"[BOOK] ClientId:{newBook.ClientId} has book for {book.CourtId} - {book.Time} - {book.Day}");
             return true;
         }
         catch (Exception e)
@@ -225,7 +270,8 @@ public class BookerManagementService : IBookerManagementService
             CourtId = book.CourtId,
             Time = book.Time,
             Day = book.Day,
-            Duration = book.Duration
+            Duration = book.Duration,
+            Show = true
         };
     }
     private static DateTime GetDateTimeForToday(SchedulerDb book)
