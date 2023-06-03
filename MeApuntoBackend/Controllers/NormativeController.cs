@@ -8,14 +8,11 @@ namespace MeApuntoBackend.Controllers;
 [Route("api/[controller]")]
 public class NormativeController : GenericController
 {
-    private readonly ILogger<LoginController> _logger;
     private readonly ICourtManagementService _courtManagementService;
-    public NormativeController(ILogger<LoginController> logger,
-        IClientManagementService loginManagementService,
+    public NormativeController(IClientManagementService loginManagementService,
         ICourtManagementService courtManagementService)
         : base(loginManagementService)
     {
-        _logger = logger;
         _courtManagementService = courtManagementService;
     }
 
@@ -26,7 +23,7 @@ public class NormativeController : GenericController
         var normatives = new List<NormativeResponse>();
 
         if (!CheckUserTokenId(token, id)) return normatives;
-        IEnumerable<NormativeResponse> n =  _courtManagementService.GetNormativeByClientId(id);
+        IEnumerable<NormativeResponse> n = _courtManagementService.GetNormativeByClientId(id);
         if (n == null) return normatives;
         return n;
     }

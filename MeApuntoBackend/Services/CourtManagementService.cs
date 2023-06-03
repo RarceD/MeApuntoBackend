@@ -78,7 +78,7 @@ public class CourtManagementService : ICourtManagementService
     {
         var allTimetables = new List<CourtResponse.Timetable>();
         int today = 0;
-        List<ConfigurationDb> timeDb = _configurationRepository.GetAllFromCourtId(urbaId).ToList();
+        List<ConfigurationDb> timeDb = _configurationRepository.GetAllFromCourtId(courtId).ToList();
         while (today < advanceBook)
         {
             var t = DateTime.Now.AddDays(today++);

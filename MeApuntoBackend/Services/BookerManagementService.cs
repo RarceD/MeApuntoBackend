@@ -131,7 +131,7 @@ public class BookerManagementService : IBookerManagementService
     #region Private Method
     private bool ValidDayHour(BookerDto newBook, int urbaId)
     {
-        List<ConfigurationDb> validHours = _configurationRepository.GetAllFromCourtId(urbaId);
+        List<ConfigurationDb> validHours = _configurationRepository.GetAllFromCourtId(newBook.CourtId);
         if (validHours.Count() == 0) return false;
 
         // First check if hour is valid according configuration:
@@ -221,7 +221,7 @@ public class BookerManagementService : IBookerManagementService
             }
 
             SendConfirmationEmail(emailToSend);
-            _logger.LogError($"[BOOK] ClientId:{newBook.ClientId} has book for {book.CourtId} - {book.Time} - {book.Day}");
+            _logger.LogWarning($"[BOOK] ClientId:{newBook.ClientId} has book for {book.CourtId} - {book.Time} - {book.Day}");
             return true;
         }
         catch (Exception e)
