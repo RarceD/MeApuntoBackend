@@ -45,15 +45,19 @@ public class PeriodicTaskService : BackgroundService
             if (scheduler.Day == yestardayDay)
             {
                 _schedulerRepository.Remove(scheduler);
-                _logger.LogWarning("[PERIODIC DELETE] task: " + _schedulerRepository.ToPrint(scheduler));
+                _logger?.LogWarning("[PERIODIC DELETE] task: " + _schedulerRepository.ToPrint(scheduler));
 
             }
         }
     }
 
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
         // Set timer to execute periodically:
-        SetTimerBookerCleaner();
+        _ = Task.Run(() =>
+        {
+            SetTimerBookerCleaner();
+        });
+        return Task.CompletedTask;
     }
 }

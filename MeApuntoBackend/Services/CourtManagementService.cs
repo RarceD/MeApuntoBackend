@@ -66,6 +66,7 @@ public class CourtManagementService : ICourtManagementService
     {
         int IComparer<string>.Compare(string? x, string? y)
         {
+            if (x == null || y == null) return 0;
             int splitX = int.Parse(x.Split(':')[0]);
             int splitY = int.Parse(y.Split(':')[0]);
             if (splitX > splitY) return 1;
@@ -125,7 +126,7 @@ public class CourtManagementService : ICourtManagementService
         {
             if (timetable.fullDay != null && timetable.Availability != null)
             {
-                var allBooksThisDay = _schedulerRepository.GetBookInDay(timetable.fullDay).Where(t => t.CourtId == courtId).ToList();
+                var allBooksThisDay = _schedulerRepository.GetBookInDay(timetable.fullDay ?? string.Empty).Where(t => t.CourtId == courtId).ToList();
                 var allTimes = timetable.Availability;
                 var match = allBooksThisDay.Join(allTimes, books => books.Time, days => days.Time,
                                                     (books, days) => new
