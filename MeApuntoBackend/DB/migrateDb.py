@@ -74,5 +74,30 @@ if not conn:
 clients.insert(conn, all_clients)
 """
 
+# Generate new format of hours
+valid_hours = ["09:00","10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00"]
+court_id = 15
+half_hour = True
+
+conn = sqlite3.connect(DB_COPY_TO, check_same_thread=False)
+if not conn:
+    print("Error connecting", DB_COPY_TO)
+
+for h in valid_hours:
+    sql_text = '''insert into Configuration (ValidHour, CourtId) values (?,?);'''
+    cur = conn.cursor()
+    cur.execute(sql_text, (h, court_id, ))
+    if half_hour:
+        new_hour = h.split(':')[0] + ':30'
+        cur.execute(sql_text, (new_hour, court_id, ))
+    conn.commit()
+        
+
+"""
+"""
+
+# For regenerate indexes:
+
+
 if __name__ == "__main__":
     pass

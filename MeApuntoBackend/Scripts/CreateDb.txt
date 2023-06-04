@@ -62,6 +62,7 @@ CREATE TABLE Scheduler (
     Time     TEXT,
     ClientId INTEGER,
     Day      TEXT,
-    Duration TEXT
+    Duration TEXT,
+    Show     NUMERIC DEFAULT (1) 
 );
 

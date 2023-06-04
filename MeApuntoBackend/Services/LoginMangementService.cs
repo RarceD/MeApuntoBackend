@@ -1,8 +1,6 @@
 ﻿using MeApuntoBackend.Controllers.Dtos;
 using MeApuntoBackend.Models;
 using MeApuntoBackend.Repositories;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System.Security.Policy;
 
 namespace MeApuntoBackend.Services;
 public class ClientManagementService : IClientManagementService
@@ -177,15 +175,14 @@ public class ClientManagementService : IClientManagementService
 
     private string GetUrbaKey(string urbaCode)
     {
-        var existCode = Config.URBA_CODES[urbaCode];
-        if (existCode != null)
+        if (Config.URBA_CODES.TryGetValue(urbaCode, out int existCode))
         {
             var urba = _urbaRepository.GetById(existCode);
             if (urba != null)
             {
-                return urba.key;
+                return urba.key ?? string.Empty;
             }
         }
-        return string.Empty;
+        throw new Exception("Urba code does not exist");
     }
 }
