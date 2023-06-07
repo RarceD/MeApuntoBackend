@@ -14,7 +14,7 @@ public class BookerManagementService : IBookerManagementService
     private readonly IConfigurationRepository _configurationRepository;
     private readonly ICourtRepository _courtRepository;
     private readonly ILogger<BookerManagementService> _logger;
-    private static CultureInfo spanishCulture = new CultureInfo("es-ES");
+    private readonly static CultureInfo spanishCulture = new("es-ES");
     private readonly IMailService _mailService;
     public BookerManagementService(IClientRepository clientRepository,
           IUrbaRepository urbaRepository,
@@ -76,9 +76,9 @@ public class BookerManagementService : IBookerManagementService
         lock (this)
         {
             // Validate time and hour:
-            if (!ValidDayHour(newBook, urba.Id)) return false;
+            if (!ValidDayHour(newBook)) return false;
             // Finally make the book:
-            return MakeBook(newBook, clienteWhoBook.username);
+            return MakeBook(newBook, clienteWhoBook.username ?? string.Empty);
         }
     }
 
@@ -129,7 +129,7 @@ public class BookerManagementService : IBookerManagementService
     }
 
     #region Private Method
-    private bool ValidDayHour(BookerDto newBook, int urbaId)
+    private bool ValidDayHour(BookerDto newBook)
     {
         List<ConfigurationDb> validHours = _configurationRepository.GetAllFromCourtId(newBook.CourtId);
         if (validHours.Count() == 0) return false;
@@ -138,7 +138,7 @@ public class BookerManagementService : IBookerManagementService
         if (!validHours.Select(i => i.ValidHour).Contains(newBook.Time)) return false;
 
         // Check someone has previously book same hour
-        var bookThisDay = _schedulerRepository.GetBookInDay(newBook.Day).Where(c => c.CourtId == newBook.CourtId).ToList();
+        var bookThisDay = _schedulerRepository.GetBookInDay(newBook.Day ?? string.Empty).Where(c => c.CourtId == newBook.CourtId).ToList();
         foreach (var b in bookThisDay)
         {
             // If I have previously book same court break
@@ -150,10 +150,15 @@ public class BookerManagementService : IBookerManagementService
             else
             {
                 // TODO: Verify that booking more than one hours works:
-                if (newBook.Duration != DurationType.ONE_HOUR)
+                if (newBook.Duration == DurationType.ONE_HALF_HOUR)
                 {
                     // Check that then next hour, for example book at 13:00 two fucking hours so 14:00 must be free
-                    var hourToVerifyIsFree = (int.Parse(newBook.Time.Split(":")[0]) + 1).ToString() + ":00";
+                    var hourToVerifyIsFree = GetNextHour(newBook.Time ?? string.Empty);
+                    if (bookThisDay.FirstOrDefault(t => t.Time == hourToVerifyIsFree) != null)
+                    {
+                        return false;
+                    }
+                    hourToVerifyIsFree = GetNextHour(hourToVerifyIsFree);
                     if (bookThisDay.FirstOrDefault(t => t.Time == hourToVerifyIsFree) != null)
                     {
                         return false;
@@ -170,7 +175,7 @@ public class BookerManagementService : IBookerManagementService
         }
         return true;
     }
-    private string GetNextHour(string currentTime)
+    private static string GetNextHour(string currentTime)
     {
         if (currentTime.Split(":")[1] == "30")
         {
@@ -195,7 +200,7 @@ public class BookerManagementService : IBookerManagementService
                 // Second not visible 30 min after:
                 newBook = ConvertBookerToScheduler(book);
                 newBook.Show = false;
-                newBook.Time = GetNextHour(newBook.Time);
+                newBook.Time = GetNextHour(newBook.Time ?? string.Empty);
                 _schedulerRepository.Add(newBook);
             }
             else if (newBook.Duration == DurationType.ONE_HALF_HOUR)
@@ -206,13 +211,13 @@ public class BookerManagementService : IBookerManagementService
                 // Second not visible 30 min after:
                 newBook = ConvertBookerToScheduler(book);
                 newBook.Show = false;
-                newBook.Time = GetNextHour(newBook.Time);
+                newBook.Time = GetNextHour(newBook.Time ?? string.Empty);
                 _schedulerRepository.Add(newBook);
 
                 // Second not visible 30 min after:
                 newBook = ConvertBookerToScheduler(book);
                 newBook.Show = false;
-                newBook.Time = GetNextHour(GetNextHour(newBook.Time));
+                newBook.Time = GetNextHour(GetNextHour(newBook.Time ?? string.Empty));
                 _schedulerRepository.Add(newBook);
             }
             else if (newBook.Duration == DurationType.TWO_HOURS)
