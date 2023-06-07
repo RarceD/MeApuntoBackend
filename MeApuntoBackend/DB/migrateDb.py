@@ -42,7 +42,7 @@ class ClientMigration():
         for n in clients:
             sql_text = ''' insert into clients (urba_id, name, username, pass, token, plays, floor, letter, house) values (?,?,?,?,?,?,?,?,?);'''
             cur = conn.cursor()
-            cur.execute(sql_text, (n.urba_id, n.name, n.username, n.token, n.passw, n.plays, n.floor, n.letter, n.house, ))
+            cur.execute(sql_text, (n.urba_id, n.name, n.username, n.passw, n.token, n.plays, n.floor, n.letter, n.house, ))
             conn.commit()
 
 
@@ -75,6 +75,7 @@ clients.insert(conn, all_clients)
 """
 
 # Generate new format of hours
+"""
 valid_hours = ["09:00","10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00"]
 court_id = 15
 half_hour = True
@@ -91,9 +92,6 @@ for h in valid_hours:
         new_hour = h.split(':')[0] + ':30'
         cur.execute(sql_text, (new_hour, court_id, ))
     conn.commit()
-        
-
-"""
 """
 
 # For regenerate indexes:
