@@ -49,6 +49,7 @@ public class BookerManagementService : IBookerManagementService
             foreach (var book in allBooks)
             {
                 DateTime date = GetDateTimeForToday(book);
+                string weekday = spanishCulture.DateTimeFormat.GetDayName(date.DayOfWeek);
                 yield return new BookerResponse
                 {
                     Id = book.Id,
@@ -58,7 +59,7 @@ public class BookerManagementService : IBookerManagementService
                     Duration = book.Duration,
                     Hour = book.Time,
                     Type = court.type,
-                    Weekday = spanishCulture.DateTimeFormat.GetDayName(date.DayOfWeek)
+                    Weekday = weekday.Substring(0, 1).ToUpper() + weekday.Substring(1)
                 };
             }
         }
@@ -193,10 +194,9 @@ public class BookerManagementService : IBookerManagementService
         try
         {
             // TODO: this is a piece of shit and should be refactor:
+            _schedulerRepository.Add(newBook);
             if (newBook.Duration == DurationType.ONE_HOUR)
             {
-                _schedulerRepository.Add(newBook);
-
                 // Second not visible 30 min after:
                 newBook = ConvertBookerToScheduler(book);
                 newBook.Show = false;
@@ -205,9 +205,6 @@ public class BookerManagementService : IBookerManagementService
             }
             else if (newBook.Duration == DurationType.ONE_HALF_HOUR)
             {
-                // Save first book visible:
-                _schedulerRepository.Add(newBook);
-
                 // Second not visible 30 min after:
                 newBook = ConvertBookerToScheduler(book);
                 newBook.Show = false;
@@ -285,7 +282,7 @@ public class BookerManagementService : IBookerManagementService
         // This shit is necessary because of linux/windows changes on time formatting
         try
         {
-            date = DateTime.ParseExact(book.Day ?? string.Empty, "dd/MM/yyyy", null);
+            date = DateTime.ParseExact(book.Day ?? string.Empty, "MM/dd/yyyy", null);
         }
         catch
         {
