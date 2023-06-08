@@ -23,6 +23,6 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore MeApuntoBackend/MeApuntoBackend.sln
     - name: Build
-      run: dotnet build MeApuntoBackend/MeApuntoBackend.csproj --no-restore
+      run: dotnet build MeApuntoBackend/MeApuntoBackend.csproj --configuration Release --no-restore
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test MeApuntoBackend/MeApuntoBackend.sln --no-build --verbosity normal
