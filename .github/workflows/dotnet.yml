@@ -24,5 +24,7 @@ jobs:
       run: dotnet restore MeApuntoBackend/MeApuntoBackend.sln
     - name: Build
       run: dotnet build MeApuntoBackend/MeApuntoBackend.csproj --configuration Release --no-restore
+    - name: Build test
+      run: dotnet build UnitTest/UnitTest.csproj --configuration Release --no-restore
     - name: Test
       run: dotnet test MeApuntoBackend/MeApuntoBackend.sln --no-build --verbosity normal
