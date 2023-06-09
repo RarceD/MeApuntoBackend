@@ -22,7 +22,9 @@ jobs:
         dotnet-version: 6.0.x
     - name: Restore dependencies
       run: dotnet restore MeApuntoBackend/MeApuntoBackend.sln
-    - name: Build
+    - name: Build App
       run: dotnet build MeApuntoBackend/MeApuntoBackend.csproj --configuration Release --no-restore
+    - name: Build Test
+      run: dotnet build UnitTest/UnitTest.csproj --configuration Release --no-restore
     - name: Test
-      run: dotnet test MeApuntoBackend/MeApuntoBackend.sln --no-build --verbosity normal
+      run: dotnet test MeApuntoBackend/MeApuntoBackend.sln --verbosity normal
