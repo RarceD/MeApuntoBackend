@@ -19,12 +19,12 @@ public class LoginController : ControllerBase
     [HttpPost]
     public LoginResponse MakeLogin(LoginDto input)
     {
-        if (input.User == null || input.Pass == null)
-            return new LoginResponse() { Success = false };
+        if (input.User == null || input.Pass == null) return new() { Success = false };
+
         var response = _loginManagementService.CheckUserExist(input.User, input.Pass);
         if (!response.Success)
         {
-            _logger.LogError("User: " + input.User + " error login with pass " + input.Pass);
+            _logger.LogWarning("User: " + input.User + " error login with pass " + input.Pass);
         }
         else
         {

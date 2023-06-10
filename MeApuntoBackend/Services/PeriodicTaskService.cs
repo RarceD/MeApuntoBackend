@@ -8,7 +8,7 @@ public class PeriodicTaskService : BackgroundService
     private static System.Timers.Timer? _bookerTimer;
     private static IServiceProvider? _serviceProvider;
     private static ILogger<PeriodicTaskService>? _logger;
-    private const int TIME_CLEAN_DB_SECONDS = 60 * 30; // Every 30 min I clear db
+    private const int TIME_CLEAN_DB_SECONDS = 60 * 60; // Every 60 min I clear db
     public PeriodicTaskService(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;

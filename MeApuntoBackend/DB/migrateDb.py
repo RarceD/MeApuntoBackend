@@ -1,4 +1,5 @@
 import sqlite3
+import sys
 from dataDto import Normative, Client
 
 class NormativeMigration():
@@ -73,6 +74,14 @@ if not conn:
     print("Error connecting", DB_COPY_TO)
 clients.insert(conn, all_clients)
 """
+
+sql_text = '''SELECT * from clients where name like ?;'''
+cur = conn.cursor()
+cur.execute(sql_text, (sys.argv[1] + '%', ))
+conn.commit()
+client = cur.fetchall()
+print("----> id", client)
+
 
 # Generate new format of hours
 """

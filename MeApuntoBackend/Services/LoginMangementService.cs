@@ -169,6 +169,9 @@ public class ClientManagementService : IClientManagementService
         var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(code);
         code = Convert.ToBase64String(plainTextBytes);
 
+        // TODO: Return free url in case of free urba:
+        // return Config.PUBLIC_URL_FREE + "/create?k=" + urbaKey + "&d=" + door + "&h=" + house + "&f=" + floor + "&i=" + code;
+
         return Config.PUBLIC_URL + "/create?k=" + urbaKey + "&d=" + door + "&h=" + house + "&f=" + floor + "&i=" + code;
     }
 
