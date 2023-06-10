@@ -24,6 +24,7 @@
     }
     public static class DurationType
     {
+        public static string HALF_HOUR = "0.5";
         public static string ONE_HOUR = "1";
         public static string ONE_HALF_HOUR = "1.5";
         public static string TWO_HOURS = "2";

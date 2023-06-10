@@ -12,7 +12,6 @@
     {
         public string? Name { get; set; }
         public int plays { get; set; }
-        public string? floor { get; set; }
         public string? letter { get; set; }
         public string? urbaName { get; set; }
         public string? username { get; set; }
