@@ -16,7 +16,7 @@ public class MailService : IMailService
         _pass = Config.PASS;
     }
 
-    public bool SendEmail(string toMailAddress, string title, string content)
+    private bool SendEmail(string toMailAddress, string title, string content)
     {
         _smtpClient = new SmtpClient(_host);
         _smtpClient.Credentials = new NetworkCredential(_emailSource, _pass);
@@ -36,16 +36,40 @@ public class MailService : IMailService
             return false;
         }
     }
-    public bool SendConfirmationEmail(string toMailAddress, string content)
+    public bool SendConfirmationEmail(string toMailAddress, string day, string hour, string time)
     {
-        return SendEmail(toMailAddress, "Confirmación de reserva", content);
+        string content = @"
+            <h2> Confirmación de reserva DAY </h2> 
+            <h3> Disfrute de su partida a las HOUR durante TIME h </h3>
+            <div> Si no pudiese asistir le recomentamos que anule su reserva con tiempo para que cualquier vecino pueda disfrutar de la pista.</div>
+            <img src='https://www.meapunto.online/images/logo.png' width = '180' height = '180' >
+            <h4> Su aplicación de reservas </h3>
+        ";
+        content = content.Replace("DAY", day).Replace("TIME", time).Replace("HOUR", hour);
+        return SendEmail(toMailAddress, "[MEAPUNTO CONFIRMACIÓN]", content);
     }
-    public bool SendCanceledEmail(string toMailAddress, string content)
+    public bool SendCanceledEmail(string toMailAddress, string day, string hour, string time)
     {
-        return SendEmail(toMailAddress, "Cancelación de reserva", content);
+        string content = @"
+            <h2> Cancelación de reserva DAY </h2> 
+            <h3> Ha cancelado su partida a las HOUR durante TIME h </h3>
+            <div> Si hubiese cancelado por error le animamos a que vuelva a realizar la reserva, esperemos que ningún vecino se le haya adelantado!</div>
+            <img src='https://www.meapunto.online/images/logo.png' width = '180' height = '180' >
+            <h4> Su aplicación de reservas </h3>
+        ";
+        content = content.Replace("DAY", day).Replace("TIME", time).Replace("HOUR", hour);
+        return SendEmail(toMailAddress, "[MEAPUNTO CANCELACIÓN]", content);
     }
-    public bool SendResetPasswordEmail(string toMailAddress, string content)
+    public bool SendResetPasswordEmail(string toMailAddress, string newPass)
     {
-        return SendEmail(toMailAddress, "Restablecimiento contraseña", content);
+        string content = @"
+            <h2> Restablecimiento de contraseña </h2> 
+            <h3> Su nueva contraseña es:<h2> CODE </h2> </h3>
+            <div> Si usted no recuerda haber restaurado su contraseña póngase en contacto con meapunto.online@gmail.com </div>
+            <img src='https://www.meapunto.online/images/logo.png' width = '180' height = '180' >
+            <h4> Su aplicación de reservas </h3>
+        ";
+        content = content.Replace("CODE", newPass);
+        return SendEmail(toMailAddress, "[MEAPUNTO CONTRASEÑA]", content);
     }
 }

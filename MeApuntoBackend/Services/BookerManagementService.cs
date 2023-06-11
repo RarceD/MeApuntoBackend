@@ -55,7 +55,7 @@ public class BookerManagementService : IBookerManagementService
                     Id = book.Id,
                     ClientId = book.ClientId,
                     CourtName = court.name,
-                    ClientName = _clientRepository.GetById(book.ClientId).name,
+                    ClientName = _clientRepository.GetById(book.ClientId).name ?? "XXX.0.0.0",
                     Duration = book.Duration,
                     Hour = book.Time,
                     Type = court.type,
@@ -121,7 +121,7 @@ public class BookerManagementService : IBookerManagementService
             var email = _clientRepository.GetById(clientId).username;
             if (email != null)
             {
-                SendDeniedEmail(email);
+                _mailService.SendCanceledEmail(email, scheduler.Day, scheduler.Time, scheduler.Duration);
             }
 
             var clientWhoNotBook = _clientRepository.GetById(clientId);
@@ -235,7 +235,7 @@ public class BookerManagementService : IBookerManagementService
                 // TODO
             }
 
-            SendConfirmationEmail(emailToSend);
+            _mailService.SendConfirmationEmail(emailToSend, newBook.Day, newBook.Time, newBook.Duration);
             _logger.LogWarning($"[BOOK] ClientId:{newBook.ClientId} has book for {book.CourtId} - {book.Time} - {book.Day}");
             return true;
         }
@@ -244,36 +244,6 @@ public class BookerManagementService : IBookerManagementService
             _logger.LogError($"[BOOK] ClientId:{newBook.ClientId} has NOT book for {newBook.CourtId} - {newBook.Time} - {newBook.Day}");
             _logger.LogError($"[BOOK] Exception launch:{e.Message}");
             return false;
-        }
-    }
-
-    private void SendConfirmationEmail(string emailToSend)
-    {
-        try
-        {
-            // TODO : Multi line string in emails
-            // https://stackoverflow.com/questions/22067168/send-multiple-textbox-values-in-mail-body-using-smtp
-            string title = "[MEAPUNTO.ONLINE] Reserva de Pista";
-            string content = "Su reserva ha sido llevada a cabo con exito.Disfrute de su partida.";
-            _mailService.SendEmail(emailToSend, title, content);
-        }
-        catch (Exception e)
-        {
-            _logger.LogWarning($"[BOOK] Email ERROR" + e.Message);
-        }
-    }
-    private void SendDeniedEmail(string emailToSend)
-    {
-        try
-        {
-            // TODO : Multi line string in emails
-            string title = "[MEAPUNTO.ONLINE] Cancelación Reserva";
-            string content = "Saludos, su reserva ha sido cancelada con éxito. Un saludo";
-            _mailService.SendEmail(emailToSend, title, content);
-        }
-        catch (Exception e)
-        {
-            _logger.LogWarning($"[BOOK] Email ERROR" + e.Message);
         }
     }
 

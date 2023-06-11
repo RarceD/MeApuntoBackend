@@ -152,8 +152,7 @@ public class ClientManagementService : IClientManagementService
 
         if (client.username != null)
         {
-            string mailContent = $"Se ha restaurado su contraseña, para acceder su correo es: {client.username} y su constraseña {rawPass}";
-            _mailService.SendEmail(client.username, FORGET_PASS_TITLE, mailContent);
+            _mailService.SendResetPasswordEmail(client.username, rawPass);
             return true;
         }
         return false;
