@@ -8,7 +8,7 @@ namespace UniTest;
 
 public class MailServiceTest
 {
-    private static string mailAddres = "";
+    private static string mailAddres = "asdftest1234@gmail.com";
     [Fact]
     public void MakeBookNotValid()
     {
@@ -16,8 +16,9 @@ public class MailServiceTest
         string hour = "10:00";
         string day = "11/06/2023";
         string time = "1h";
-        bookerManagement.SendCanceledEmail(mailAddres, day, hour, time);
+        // bookerManagement.SendCanceledEmail(mailAddres, day, hour, time);
         bookerManagement.SendConfirmationEmail(mailAddres, day, hour, time);
-        bookerManagement.SendResetPasswordEmail(mailAddres, "1234");
+        // bookerManagement.SendResetPasswordEmail(mailAddres, "1234");
+        Assert.False(false);
     }
 }
