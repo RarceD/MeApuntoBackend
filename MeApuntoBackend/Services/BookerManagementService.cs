@@ -79,7 +79,14 @@ public class BookerManagementService : IBookerManagementService
             // Validate time and hour:
             if (!ValidDayHour(newBook)) return false;
             // Finally make the book:
-            return MakeBook(newBook, clienteWhoBook.username ?? string.Empty);
+            bool success = MakeBook(newBook, clienteWhoBook.username ?? string.Empty);
+            // Update stats from player:
+            if (success)
+            {
+                clienteWhoBook.plays++;
+                _clientRepository.Update(clienteWhoBook);
+            }
+            return success;
         }
     }
 
@@ -117,13 +124,19 @@ public class BookerManagementService : IBookerManagementService
                 SendDeniedEmail(email);
             }
 
-            string logString = $"[BOOK] clientId:{clientId} has delete book for court:{scheduler.CourtId} - {scheduler.Day} - {scheduler.Time}";
-            _logger.LogWarning(logString);
+            var clientWhoNotBook = _clientRepository.GetById(clientId);
+            if (clientWhoNotBook != null)
+            {
+                clientWhoNotBook.plays--;
+                _clientRepository.Update(clientWhoNotBook);
+            }
+
+            _logger.LogWarning($"[BOOK] clientId:{clientId} has delete book for court:{scheduler.CourtId} - {scheduler.Day} - {scheduler.Time}");
             return true;
         }
         catch (Exception e)
         {
-            _logger.LogError($"[BOOK] clientId:{clientId} has NOT delete for court:{scheduler.CourtId} - {scheduler.Day} - {scheduler.Time}");
+            _logger.LogError($"[BOOK ERROR] clientId:{clientId} has NOT delete for court:{scheduler.CourtId} - {scheduler.Day} - {scheduler.Time}");
             _logger.LogError($"Exception launch:{e.Message}");
             return false;
         }
