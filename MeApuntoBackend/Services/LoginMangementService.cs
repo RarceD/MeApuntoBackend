@@ -52,6 +52,8 @@ public class ClientManagementService : IClientManagementService
 
     public LoginResponse CheckUserExist(string user, string pass)
     {
+        // user to lowercase:
+        user = user.ToLower();
         var resp = new LoginResponse() { Success = false };
         ClientDb? client = _clientRepository.GetClientWithUser(user);
         if (client == null) return resp;

@@ -24,11 +24,11 @@ public class LoginController : ControllerBase
         var response = _loginManagementService.CheckUserExist(input.User, input.Pass);
         if (!response.Success)
         {
-            _logger.LogWarning("User: " + input.User + " error login with pass " + input.Pass);
+            _logger.LogWarning("[LOGIN ERROR] User: " + input.User + " error login with pass " + input.Pass);
         }
         else
         {
-            _logger.LogWarning("User: " + input.User + " login with id " + response.Id);
+            _logger.LogWarning("[LOGIN OK] User: " + input.User + " login with id " + response.Id);
         }
         return response;
 
