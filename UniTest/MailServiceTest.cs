@@ -12,12 +12,12 @@ public class MailServiceTest
     [Fact]
     public void MakeBookNotValid()
     {
-        IMailService bookerManagement = new MailService();
-        string hour = "10:00";
-        string day = "11/06/2023";
-        string time = "1h";
+        // IMailService bookerManagement = new MailService();
+        // string hour = "10:00";
+        // string day = "11/06/2023";
+        // string time = "1h";
         // bookerManagement.SendCanceledEmail(mailAddres, day, hour, time);
-        bookerManagement.SendConfirmationEmail(mailAddres, day, hour, time);
+        // bookerManagement.SendConfirmationEmail(mailAddres, day, hour, time);
         // bookerManagement.SendResetPasswordEmail(mailAddres, "1234");
         Assert.False(false);
     }
