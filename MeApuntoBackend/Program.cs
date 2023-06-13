@@ -31,6 +31,9 @@ namespace MeApuntoBackend
             // Services:
             LoadServices(builder);
 
+            // Stats:
+            builder.Services.AddSingleton<IStatsService, StatsService>();
+
             // Add services to the container.
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
