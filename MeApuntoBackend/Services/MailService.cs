@@ -20,14 +20,14 @@ public class MailService : IMailService
     {
         _smtpClient = new SmtpClient(_host);
         _smtpClient.Credentials = new NetworkCredential(_emailSource, _pass);
-        _mailMessage = new MailMessage();
-        _mailMessage.From = new MailAddress(_emailSource, _emailSource, System.Text.Encoding.UTF8);
-        _mailMessage.To.Add(new MailAddress(toMailAddress));
-        _mailMessage.Subject = title;
-        _mailMessage.Body = content;
-        _mailMessage.IsBodyHtml = true;
         try
         {
+            _mailMessage = new MailMessage();
+            _mailMessage.From = new MailAddress(_emailSource, _emailSource, System.Text.Encoding.UTF8);
+            _mailMessage.To.Add(new MailAddress(toMailAddress));
+            _mailMessage.Subject = title;
+            _mailMessage.Body = content;
+            _mailMessage.IsBodyHtml = true;
             _smtpClient.Send(_mailMessage);
             return true;
         }
