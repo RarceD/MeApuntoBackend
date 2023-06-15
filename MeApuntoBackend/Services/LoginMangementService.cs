@@ -1,6 +1,7 @@
 ﻿using MeApuntoBackend.Controllers.Dtos;
 using MeApuntoBackend.Models;
 using MeApuntoBackend.Repositories;
+using MeApuntoBackend.Services.Dto;
 
 namespace MeApuntoBackend.Services;
 public class ClientManagementService : IClientManagementService
@@ -9,20 +10,21 @@ public class ClientManagementService : IClientManagementService
     private readonly IUrbaRepository _urbaRepository;
     private readonly IMailService _mailService;
     private readonly ILogger<ClientManagementService> _logger;
-
-    private const string FORGET_PASS_TITLE = "[MEAPUNTO.ONLINE] Recuperación de contraseña";
+    private readonly IStatsService _statsService;
 
     public ClientManagementService(
         ILogger<ClientManagementService> logger,
         IClientRepository clientRepository,
         IUrbaRepository urbaRepository,
-        IMailService mailService
+        IMailService mailService,
+        IStatsService statsService
         )
     {
         _clientRepository = clientRepository;
         _urbaRepository = urbaRepository;
         _mailService = mailService;
         _logger = logger;
+        _statsService = statsService;
     }
 
     public bool AddClient(CreateDto newClient, int urbaId)
@@ -56,13 +58,13 @@ public class ClientManagementService : IClientManagementService
         user = user.ToLower();
         var resp = new LoginResponse() { Success = false };
         ClientDb? client = _clientRepository.GetClientWithUser(user);
-        if (client == null) return resp;
-        if (pass == client.pass)
+        if (client != null && pass == client.pass)
         {
             resp.Success = true;
             resp.Token = client.token;
             resp.Id = (int)client.id;
         }
+        _statsService.AddLoginRecord(new LoginRecord() { Success = resp.Success, RegisterTime = DateTime.Now });
         return resp;
     }
 
@@ -132,6 +134,7 @@ public class ClientManagementService : IClientManagementService
     {
         ClientDb? client = _clientRepository.GetById(id);
         if (client == null) return false;
+        if (token == string.Empty || token is null) return false;
         var notCheting = client.token == token;
         if (!notCheting)
             _logger.LogWarning("Client with id: " + id + " has modified token and id");
