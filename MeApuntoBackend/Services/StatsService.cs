@@ -11,7 +11,7 @@ public class StatsService : IStatsService
     private readonly ConcurrentStack<LoginRecord> _loginRecords;
     private readonly ConcurrentStack<BookerRecord> _bookerRecords;
     private readonly System.Timers.Timer _dbTimer;
-    private const int TIME_STORE_DB_SECONDS = 5 * 1; // Every 1 min I clear db
+    private const int TIME_STORE_DB_SECONDS = 60 * 1; // Every 1 min I clear db
 
     public StatsService(IServiceScopeFactory scopeFactory)
     {
@@ -37,10 +37,10 @@ public class StatsService : IStatsService
         using (IServiceScope scope = _scopeFactory.CreateScope())
         {
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            var store = new SchedulerRepository(dbContext);
+            var loginStats = new LoginStatsRepository(dbContext);
             while (!_bookerRecords.IsEmpty)
             {
-                if (_bookerRecords.TryPop(out var element))
+                if (_bookerRecords.TryPop(out BookerRecord? element))
                 {
                     // TODO create db table
                 }
@@ -49,7 +49,11 @@ public class StatsService : IStatsService
             {
                 if (_loginRecords.TryPop(out LoginRecord? element))
                 {
-                    // TODO create db table
+                    loginStats.Add(new()
+                    {
+                        RegisterTime = element.RegisterTime.ToString(),
+                        Success = element.Success
+                    });
                 }
             }
         }
