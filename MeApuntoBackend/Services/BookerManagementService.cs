@@ -16,12 +16,15 @@ public class BookerManagementService : IBookerManagementService
     private readonly ILogger<BookerManagementService> _logger;
     private readonly static CultureInfo spanishCulture = new("es-ES");
     private readonly IMailService _mailService;
+    private readonly IStatsService _statsService;
+
     public BookerManagementService(IClientRepository clientRepository,
           IUrbaRepository urbaRepository,
           ISchedulerRepository schedulerRepository,
           IConfigurationRepository configurationRepository,
           IMailService mailService,
           ICourtRepository courtRepository,
+          IStatsService statsService,
           ILogger<BookerManagementService> logger)
     {
         _clientRepository = clientRepository;
@@ -31,6 +34,7 @@ public class BookerManagementService : IBookerManagementService
         _courtRepository = courtRepository;
         _logger = logger;
         _mailService = mailService;
+        _statsService = statsService;
     }
 
     #endregion
