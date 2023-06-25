@@ -2,6 +2,7 @@
 using MeApuntoBackend.Models;
 using MeApuntoBackend.Repositories;
 using MeApuntoBackend.Services.Dto;
+using System.Text.RegularExpressions;
 
 namespace MeApuntoBackend.Services;
 public class ClientManagementService : IClientManagementService
@@ -77,6 +78,10 @@ public class ClientManagementService : IClientManagementService
 
     public bool IsValidUserCode(string code)
     {
+        // Check the format is like: XXX.0.0.0
+        if (!Regex.IsMatch(code, @"^[a-zA-Z0-9.]+$"))
+            return false;
+
         return _clientRepository.IsValidUserCode(code);
     }
     public ProfileResponse GetProfileInfo(int id)
