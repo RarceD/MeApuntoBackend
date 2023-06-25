@@ -1,6 +1,7 @@
 using MeApuntoBackend.Controllers.Dtos;
 using MeApuntoBackend.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.RegularExpressions;
 
 namespace MeApuntoBackend.Controllers;
 
@@ -69,10 +70,11 @@ public class CreateController : ControllerBase
             var base64EncodedBytes = System.Convert.FromBase64String(input.Code);
             string code = System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
 
+            _logger.LogWarning("[CREATE] with code: " + input.Code);
+
             // verify other client does not have it:
             if (!_loginManagementService.IsValidUserCode(code)) return new();
 
-            _logger.LogWarning("[CREATE] with code: " + input.Code);
             return new()
             {
                 Success = true,
