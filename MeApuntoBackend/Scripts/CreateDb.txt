@@ -70,5 +70,6 @@ CREATE TABLE LoginStats (
     Id           INTEGER PRIMARY KEY
                          UNIQUE,
     Success      INTEGER,
-    RegisterTime TEXT
+    RegisterTime TEXT,
+    AutoLogin    INTEGER
 );
