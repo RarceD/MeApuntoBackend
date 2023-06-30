@@ -1,7 +1,6 @@
 using MeApuntoBackend.Controllers.Dtos;
 using MeApuntoBackend.Services;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json.Nodes;
 
 namespace MeApuntoBackend.Controllers;
 

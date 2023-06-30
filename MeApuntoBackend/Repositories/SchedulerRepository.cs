@@ -1,5 +1,4 @@
 ﻿using MeApuntoBackend.Models;
-using System.Configuration;
 
 namespace MeApuntoBackend.Repositories;
 public class SchedulerRepository : ISchedulerRepository

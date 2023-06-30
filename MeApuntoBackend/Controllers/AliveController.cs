@@ -1,4 +1,3 @@
-using MeApuntoBackend.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MeApuntoBackend.Controllers;
