@@ -1,7 +1,6 @@
 
 using MeApuntoBackend.Repositories;
 using MeApuntoBackend.Services;
-using Microsoft.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace MeApuntoBackend

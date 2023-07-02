@@ -11,7 +11,7 @@ public class StatsService : IStatsService
     private readonly ConcurrentStack<LoginRecord> _loginRecords;
     private readonly ConcurrentStack<BookerRecord> _bookerRecords;
     private readonly System.Timers.Timer _dbTimer;
-    private const int TIME_STORE_DB_SECONDS = 60 * 1; // Every 1 min I clear db
+    private const int TIME_STORE_DB_SECONDS = 60 * 5; // Every 5 min I clear db
 
     public StatsService(IServiceScopeFactory scopeFactory)
     {
@@ -52,7 +52,8 @@ public class StatsService : IStatsService
                     loginStats.Add(new()
                     {
                         RegisterTime = element.RegisterTime.ToString(),
-                        Success = element.Success
+                        Success = element.Success,
+                        AutoLogin = element.AutoLogin
                     });
                 }
             }
