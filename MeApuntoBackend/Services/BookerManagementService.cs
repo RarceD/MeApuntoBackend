@@ -81,7 +81,7 @@ public class BookerManagementService : IBookerManagementService
         lock (this)
         {
             // Validate time and hour:
-            if (!ValidDayHour(newBook)) return false;
+            if (!ValidDayHour(newBook, clienteWhoBook.id)) return false;
             // Finally make the book:
             bool success = MakeBook(newBook, clienteWhoBook.username ?? string.Empty);
             // Update stats from player:
@@ -147,7 +147,7 @@ public class BookerManagementService : IBookerManagementService
     }
 
     #region Private Method
-    private bool ValidDayHour(BookerDto newBook)
+    private bool ValidDayHour(BookerDto newBook, int clientId)
     {
         List<ConfigurationDb> validHours = _configurationRepository.GetAllFromCourtId(newBook.CourtId);
         if (validHours.Count() == 0) return false;
@@ -155,7 +155,12 @@ public class BookerManagementService : IBookerManagementService
         // First check if hour is valid according configuration:
         if (!validHours.Select(i => i.ValidHour).Contains(newBook.Time)) return false;
 
-        // Check someone has previously book same hour
+        // Check someone has previously book same day but other courts:
+        var bookThisDayBySameUser = _schedulerRepository.GetBookInDay(newBook.Day ?? string.Empty)
+            .Where(b => b.ClientId == clientId).ToList();
+        if (bookThisDayBySameUser.Any()) return false;
+
+        // Check someone has previously book same court
         var bookThisDay = _schedulerRepository.GetBookInDay(newBook.Day ?? string.Empty).Where(c => c.CourtId == newBook.CourtId).ToList();
         foreach (var b in bookThisDay)
         {
