@@ -1,0 +1,9 @@
+﻿
+// NOT IN PRODUCTION:
+
+// 25/07/2023
+// ALTER TABLE Urbas ADD COLUMN free NUMERIC;
+// UPDATE Urbas SET free=0;
+
+
+
