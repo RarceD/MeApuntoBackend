@@ -170,7 +170,7 @@ public class ClientManagementService : IClientManagementService
     public string GenerateUrlForCode(string code)
     {
         var extracted = code.Split('.');
-        var urbaKey = GetUrbaKey(extracted[0]);
+        var urba = GetUrbaKey(extracted[0]);
         var house = extracted[1];
         var floor = extracted[2];
         var door = extracted[3];
@@ -179,21 +179,20 @@ public class ClientManagementService : IClientManagementService
         var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(code);
         code = Convert.ToBase64String(plainTextBytes);
 
-        // TODO: Return free url in case of free urba:
-        // return Config.PUBLIC_URL_FREE + "/create?k=" + urbaKey + "&d=" + door + "&h=" + house + "&f=" + floor + "&i=" + code;
-
-        return Config.PUBLIC_URL + "/create?k=" + urbaKey + "&d=" + door + "&h=" + house + "&f=" + floor + "&i=" + code;
+        var baseUrl = urba.free ? Config.PUBLIC_URL_FREE : Config.PUBLIC_URL_PAID;
+        var url = $"{baseUrl}/create?k={urba.urbaKey}&d={door}&h={house}&f={floor}&i={code}";
+        return url;
     }
 
 
-    private string GetUrbaKey(string urbaCode)
+    private (string urbaKey, bool free) GetUrbaKey(string urbaCode)
     {
         if (Config.URBA_CODES.TryGetValue(urbaCode, out int existCode))
         {
             var urba = _urbaRepository.GetById(existCode);
             if (urba != null)
             {
-                return urba.key ?? string.Empty;
+                return (urba.key ?? string.Empty, urba.free);
             }
         }
         throw new Exception("Urba code does not exist");
