@@ -10,6 +10,10 @@ public interface IClientManagementService
     ProfileResponse? GetProfileInfo(int id);
     bool UpdateUserProfile(ProfileDto profileId);
     bool CheckUserTokenId(string token, int id);
+    bool CheckUserIsAdmin(int id);
     bool ForgetPassword(string username);
     string GenerateUrlForCode(string code);
+    IEnumerable<AdminDto> GetEmailContains(string str);
+    IEnumerable<AdminDto> GetCodeContains(string str);
+    IEnumerable<StatsResponse> GetStats();
 }

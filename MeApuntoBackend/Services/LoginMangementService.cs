@@ -11,6 +11,7 @@ public class ClientManagementService : IClientManagementService
     private readonly IUrbaRepository _urbaRepository;
     private readonly IMailService _mailService;
     private readonly ILogger<ClientManagementService> _logger;
+    private readonly ILoginStatsRepository _loginStatsRepository;
     private readonly IStatsService _statsService;
 
     public ClientManagementService(
@@ -18,7 +19,8 @@ public class ClientManagementService : IClientManagementService
         IClientRepository clientRepository,
         IUrbaRepository urbaRepository,
         IMailService mailService,
-        IStatsService statsService
+        IStatsService statsService,
+        ILoginStatsRepository loginStatsRepository
         )
     {
         _clientRepository = clientRepository;
@@ -26,6 +28,7 @@ public class ClientManagementService : IClientManagementService
         _mailService = mailService;
         _logger = logger;
         _statsService = statsService;
+        _loginStatsRepository = loginStatsRepository;
     }
 
     public bool AddClient(CreateDto newClient, int urbaId)
@@ -145,6 +148,14 @@ public class ClientManagementService : IClientManagementService
             _logger.LogWarning("Client with id: " + id + " has modified token and id");
         return client.token == token;
     }
+
+    public bool CheckUserIsAdmin(int id)
+    {
+        // TODO: Add admin param in DB
+        // ClientDb? client = _clientRepository.GetById(id);
+        // return client.IsAdmin;
+        return true;
+    }
     public bool ForgetPassword(string username)
     {
         username = username.ToLower();
@@ -197,4 +208,34 @@ public class ClientManagementService : IClientManagementService
         }
         throw new Exception("Urba code does not exist");
     }
+    public IEnumerable<AdminDto> GetEmailContains(string str)
+    {
+        return _clientRepository.GetAll()
+            .Where(client => client.username.Contains(str))
+            .Select((client) => new AdminDto()
+            {
+                Code = client.name,
+                Email = client.username
+            });
+    }
+    public IEnumerable<AdminDto> GetCodeContains(string str)
+    {
+        return _clientRepository.GetAll()
+            .Where(client => client.name.ToLower().Contains(str))
+            .Select((client) => new AdminDto()
+            {
+                Code = client.name,
+                Email = client.username
+            });
+    }
+    public IEnumerable<StatsResponse> GetStats()
+    {
+        return _loginStatsRepository.GetAll()
+            .Select((stats) => new StatsResponse()
+            {
+                Date = stats.RegisterTime,
+                Success = stats.Success
+            });
+    }
+
 }
