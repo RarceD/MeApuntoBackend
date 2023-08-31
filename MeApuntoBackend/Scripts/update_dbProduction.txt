@@ -4,9 +4,13 @@
 
 // IN PRODUCTION:
 
+// 02/08/2023
+ALTER TABLE clients ADD COLUMN role NUMERIC;
+UPDATE clients SET role=0;
+
 // 25/07/2023
-// ALTER TABLE Urbas ADD COLUMN free NUMERIC;
-// UPDATE Urbas SET free=0;
+ALTER TABLE Urbas ADD COLUMN free NUMERIC;
+UPDATE Urbas SET free=0;
 
 
 
