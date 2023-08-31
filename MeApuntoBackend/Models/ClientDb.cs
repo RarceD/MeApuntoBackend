@@ -11,4 +11,5 @@ public class ClientDb
     public string? floor { get; set; }
     public string? letter { get; set; }
     public string? house { get; set; }
+    public int role { get; set; }
 }

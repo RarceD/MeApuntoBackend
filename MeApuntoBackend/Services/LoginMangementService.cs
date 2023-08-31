@@ -151,10 +151,8 @@ public class ClientManagementService : IClientManagementService
 
     public bool CheckUserIsAdmin(int id)
     {
-        // TODO: Add admin param in DB
-        // ClientDb? client = _clientRepository.GetById(id);
-        // return client.IsAdmin;
-        return true;
+        ClientDb client = _clientRepository.GetById(id);
+        return client.role == (int)ClientRole.ADMIN;
     }
     public bool ForgetPassword(string username)
     {
@@ -210,6 +208,7 @@ public class ClientManagementService : IClientManagementService
     }
     public IEnumerable<AdminDto> GetEmailContains(string str)
     {
+        if (string.IsNullOrEmpty(str)) return Enumerable.Empty<AdminDto>(); 
         return _clientRepository.GetAll()
             .Where(client => client.username.Contains(str))
             .Select((client) => new AdminDto()
@@ -220,6 +219,7 @@ public class ClientManagementService : IClientManagementService
     }
     public IEnumerable<AdminDto> GetCodeContains(string str)
     {
+        if (string.IsNullOrEmpty(str)) return Enumerable.Empty<AdminDto>(); 
         return _clientRepository.GetAll()
             .Where(client => client.name.ToLower().Contains(str))
             .Select((client) => new AdminDto()
