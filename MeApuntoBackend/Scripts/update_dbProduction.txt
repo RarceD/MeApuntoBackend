@@ -12,5 +12,7 @@ UPDATE clients SET role=0;
 ALTER TABLE Urbas ADD COLUMN free NUMERIC;
 UPDATE Urbas SET free=0;
 
+// Maintenance, every 3 months should run:
+echo 1 > /proc/sys/vm/drop_caches
 
 
