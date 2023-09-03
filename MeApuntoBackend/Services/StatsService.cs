@@ -38,11 +38,18 @@ public class StatsService : IStatsService
         {
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             var loginStats = new LoginStatsRepository(dbContext);
+            var bookerStats = new BookerStatsRepository(dbContext);
             while (!_bookerRecords.IsEmpty)
             {
                 if (_bookerRecords.TryPop(out BookerRecord? element))
                 {
-                    // TODO create db table
+                    bookerStats.Add(new()
+                    {
+                        CourtId = element.CourtId,
+                        BookTime = element.BookTime,
+                        IsDelete = element.IsDelete,
+                        RegisterTime = element.RegisterTime
+                    });
                 }
             }
             while (!_loginRecords.IsEmpty)

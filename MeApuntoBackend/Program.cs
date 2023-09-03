@@ -87,6 +87,7 @@ namespace MeApuntoBackend
             builder.Services.AddScoped<ISchedulerRepository, SchedulerRepository>();
             builder.Services.AddScoped<IConfigurationRepository, ConfigurationRepository>();
             builder.Services.AddScoped<ILoginStatsRepository, LoginStatsRepository>();
+            builder.Services.AddScoped<IBookerStatsRepository, BookerStatsRepository>();
         }
     }
 }

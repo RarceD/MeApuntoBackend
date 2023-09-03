@@ -16,7 +16,7 @@ public class BookerManagementService : IBookerManagementService
     private readonly ILogger<BookerManagementService> _logger;
     private readonly static CultureInfo spanishCulture = new("es-ES");
     private readonly IMailService _mailService;
-    private readonly IStatsService _statsService;
+    private readonly IBookerStatsRepository _bookerStatsRepository;
 
     public BookerManagementService(IClientRepository clientRepository,
           IUrbaRepository urbaRepository,
@@ -24,7 +24,7 @@ public class BookerManagementService : IBookerManagementService
           IConfigurationRepository configurationRepository,
           IMailService mailService,
           ICourtRepository courtRepository,
-          IStatsService statsService,
+          IBookerStatsRepository bookerStatsRepository,
           ILogger<BookerManagementService> logger)
     {
         _clientRepository = clientRepository;
@@ -34,7 +34,7 @@ public class BookerManagementService : IBookerManagementService
         _courtRepository = courtRepository;
         _logger = logger;
         _mailService = mailService;
-        _statsService = statsService;
+        _bookerStatsRepository = bookerStatsRepository;
     }
 
     #endregion
@@ -144,6 +144,17 @@ public class BookerManagementService : IBookerManagementService
             _logger.LogError($"Exception launch:{e.Message}");
             return false;
         }
+    }
+
+    public IEnumerable<BookerStatsDto> GetStats()
+    {
+        return _bookerStatsRepository.GetAll().Select(stats => new BookerStatsDto()
+        {
+            CourtId = stats.CourtId,
+            IsDelete = stats.IsDelete,
+            RegisterTime = DateTime.Parse(stats.RegisterTime ?? string.Empty),
+            BookTime = DateTime.Parse(stats.BookTime ?? string.Empty)
+        }).ToList();
     }
 
     #region Private Method
