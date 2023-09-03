@@ -16,4 +16,5 @@ public class ApplicationDbContext : DbContext
     public DbSet<SchedulerDb> Scheduler { get; set; }
     public DbSet<ConfigurationDb> Configuration { get; set; }
     public DbSet<LoginStatsDb> LoginStats { get; set; }
+    public DbSet<BookerStatsDb> BookerStats { get; set; }
 }

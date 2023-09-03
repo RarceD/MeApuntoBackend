@@ -8,12 +8,15 @@ namespace MeApuntoBackend.Controllers;
 [Route("api/[controller]")]
 public class StatsController : GenericController
 {
-    private readonly ILogger<StatsController> _logger;
     private readonly IStatsService _statsService;
-    public StatsController(ILogger<StatsController> logger, IClientManagementService loginManagementService, IStatsService statsService)
+    private readonly IBookerManagementService _bookerManagementService;
+    public StatsController(ILogger<StatsController> logger, 
+        IClientManagementService loginManagementService,
+        IBookerManagementService bookerManagementService,
+        IStatsService statsService)
         : base(loginManagementService)
     {
-        _logger = logger;
+        _bookerManagementService = bookerManagementService;
         _statsService = statsService;
     }
 
@@ -23,5 +26,19 @@ public class StatsController : GenericController
         if (!CheckUserTokenId(stats.Token ?? string.Empty, stats.Id)) return NoContent();
         _statsService.AddLoginRecord(new() { Success = true, RegisterTime = DateTime.Now, AutoLogin = true });
         return Ok();
+    }
+
+    [HttpGet]
+    public IActionResult GetStats(string token, int id)
+    {
+        if (!IsAdmin(id, token)) return GetNotAdminResponse();
+        return Ok(_clientManagementService.GetStats());
+    }
+
+    [HttpGet("booker")]
+    public IActionResult GetBooksStats(string token, int id)
+    {
+        if (!IsAdmin(id, token)) return GetNotAdminResponse();
+        return Ok(_bookerManagementService.GetStats());
     }
 }

@@ -1,6 +1,7 @@
-﻿namespace MeApuntoBackend.Services.Dto;
-public class BookerRecord
+﻿namespace MeApuntoBackend.Models;
+public class BookerStatsDb
 {
+    public int Id { get; set; }
     public int CourtId { get; set; }
     public string? BookTime { get; set; }
     public string? RegisterTime { get; set; }
