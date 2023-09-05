@@ -73,3 +73,13 @@ CREATE TABLE LoginStats (
     RegisterTime TEXT,
     AutoLogin    INTEGER
 );
+
+
+CREATE TABLE BookerStats (
+    Id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    CourtId      INTEGER,
+    BookTime     TEXT,
+    RegisterTime TEXT,
+    IsDelete     NUMERIC
+);
+
