@@ -1,6 +1,7 @@
 
 using MeApuntoBackend.Repositories;
 using MeApuntoBackend.Services;
+using MeApuntoBackend.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace MeApuntoBackend
@@ -76,6 +77,7 @@ namespace MeApuntoBackend
             builder.Services.AddScoped<ICourtManagementService, CourtManagementService>();
             builder.Services.AddScoped<IBookerManagementService, BookerManagementService>();
             builder.Services.AddScoped<IMailService, MailService>();
+            builder.Services.AddScoped<IPaymentService, PaymentStripeService>();
         }
 
         private static void LoadRepositories(WebApplicationBuilder builder)
