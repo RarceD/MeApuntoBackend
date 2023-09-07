@@ -17,11 +17,19 @@ public class PaymentController : GenericController
         _tPVService = tpv;
     }
 
-    [HttpPost("pay")]
-    public IActionResult GetMatchCode(string token, int id, string matchStr)
+    public class InputDto
     {
-        if (!IsAdmin(id, token)) return GetNotAdminResponse();
-        _tPVService.ProccessPayment();
-        return Ok(_clientManagementService.GetCodeContains(matchStr.ToLower()));
+        public string Token { get; set; }
+        public int Id { get; set; }
+
+    }
+    [HttpPost("pay")]
+    public IActionResult PostPayment(InputDto input)
+    {
+        if (!IsAdmin(input.Id, input.Token)) return GetNotAdminResponse();
+        var session = _tPVService.ProccessPayment();
+
+        Response.Headers.Add("Location", session.Url);
+        return Ok(session);
     }
 }
