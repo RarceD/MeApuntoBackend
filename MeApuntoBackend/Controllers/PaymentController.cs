@@ -1,3 +1,4 @@
+using MeApuntoBackend.Controllers.Dtos;
 using MeApuntoBackend.Services;
 using MeApuntoBackend.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -17,19 +18,12 @@ public class PaymentController : GenericController
         _tPVService = tpv;
     }
 
-    public class InputDto
-    {
-        public string Token { get; set; }
-        public int Id { get; set; }
-
-    }
     [HttpPost("pay")]
-    public IActionResult PostPayment(InputDto input)
+    public IActionResult PostPayment(PaymentDto payment)
     {
-        if (!IsAdmin(input.Id, input.Token)) return GetNotAdminResponse();
-        var session = _tPVService.ProccessPayment();
-
-        Response.Headers.Add("Location", session.Url);
-        return Ok(session);
+        if (!IsAdmin(payment.Id, payment.Token ?? string.Empty)) return GetNotAdminResponse();
+        var response = _tPVService.ProccessPayment(payment);
+        Response.Headers.Add("Location", response.Url);
+        return Ok(response);
     }
 }
