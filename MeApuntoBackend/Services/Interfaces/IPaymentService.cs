@@ -1,7 +1,8 @@
-﻿using MeApuntoBackend.Services.Dto;
+﻿using MeApuntoBackend.Controllers.Dtos;
+using MeApuntoBackend.Services.Dto;
 
 namespace MeApuntoBackend.Services.Interfaces;
 public interface IPaymentService
 {
-    PaymentResponseDto ProccessPayment();
+    PaymentResponseDto ProccessPayment(PaymentDto payment);
 }
