@@ -77,7 +77,8 @@ namespace MeApuntoBackend
             builder.Services.AddScoped<ICourtManagementService, CourtManagementService>();
             builder.Services.AddScoped<IBookerManagementService, BookerManagementService>();
             builder.Services.AddScoped<IMailService, MailService>();
-            builder.Services.AddScoped<IPaymentService, PaymentStripeService>();
+            builder.Services.AddScoped<IPaymentService, PaymentService>();
+            builder.Services.AddScoped<IBookerService, BookerService>();
         }
 
         private static void LoadRepositories(WebApplicationBuilder builder)
