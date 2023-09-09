@@ -1,5 +1,6 @@
 ﻿using MeApuntoBackend.Controllers.Dtos;
 using MeApuntoBackend.Services.Dto;
+using MeApuntoBackend.Services.Factory;
 using MeApuntoBackend.Services.Interfaces;
 using Stripe;
 using Stripe.Checkout;
@@ -15,7 +16,7 @@ public class PaymentService : IPaymentService
 
     public PaymentResponseDto ProccessPayment(PaymentDto payment)
     {
-        PaymentBaseService stripeService = new StripeService();
+        PaymentBaseService stripeService = PaymentServiceFactory.Resolve(payment);
         stripeService.SetConfiguration(_configuration);
         var response = stripeService.ProccessPayment(payment);
         return response;
