@@ -34,7 +34,7 @@ public class NormativeRepository : INormativeRepository
     }
     public IEnumerable<NormativeDb> GetAllFromUrbaId(int id)
     {
-        List<NormativeDb> normatives = _context.Normative.Where(i=>i.UrbaId == id).ToList();
+        List<NormativeDb> normatives = _context.Normative.Where(i => i.UrbaId == id).ToList();
         return normatives;
     }
 }

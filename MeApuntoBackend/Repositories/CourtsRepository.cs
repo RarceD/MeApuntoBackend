@@ -37,7 +37,7 @@ public class CourtRepository : ICourtRepository
 
     public List<CourtDb> GetFromUrbaId(int urbaId)
     {
-        List<CourtDb> clients = _context.Courts.Where(i=>i.urba_id == urbaId).ToList();
+        List<CourtDb> clients = _context.Courts.Where(i => i.urba_id == urbaId).ToList();
         return clients;
     }
 }

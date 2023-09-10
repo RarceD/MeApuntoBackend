@@ -19,7 +19,7 @@ public class ForgetController : ControllerBase
     [HttpPost]
     public ForgetResponse ForgetFuckingPass(ForgetDto input)
     {
-        var resp = new ForgetResponse() {Success = false };
+        var resp = new ForgetResponse() { Success = false };
         if (input.Username == null) return resp;
 
         resp.Success = _clientManagementService.ForgetPassword(input.Username);

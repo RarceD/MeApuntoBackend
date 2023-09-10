@@ -18,7 +18,7 @@ public class ProfileController : GenericController
     [HttpGet]
     public ProfileResponse GetProfileInfo(string token, int id)
     {
-        if (!CheckUserTokenId(token, id))  return new ProfileResponse(); 
+        if (!CheckUserTokenId(token, id)) return new ProfileResponse();
 
         ProfileResponse? profile = _clientManagementService.GetProfileInfo(id);
         return profile == null ? new ProfileResponse() : profile;
@@ -27,11 +27,11 @@ public class ProfileController : GenericController
     [HttpPost]
     public ActionResult UpdateProfileInfo(ProfileDto input)
     {
-        if (!CheckUserTokenId(input.Token?? string.Empty, input.Id)) return NoContent();
+        if (!CheckUserTokenId(input.Token ?? string.Empty, input.Id)) return NoContent();
         var success = _clientManagementService.UpdateUserProfile(input);
         if (success)
         {
-            if (input.Username != string.Empty) 
+            if (input.Username != string.Empty)
             {
                 _logger.LogWarning("Client id: " + input.Id + " has change its username");
             }

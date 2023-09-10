@@ -26,7 +26,7 @@ public class CourtsController : GenericController
         if (!CheckUserTokenId(token, id)) return c;
 
         var profile = _courtManagementService.GetCourts(id);
-        if (profile == null) return c; 
+        if (profile == null) return c;
         return profile;
     }
 }

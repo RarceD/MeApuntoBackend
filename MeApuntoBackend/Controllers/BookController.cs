@@ -1,6 +1,5 @@
 using MeApuntoBackend.Controllers.Dtos;
 using MeApuntoBackend.Services;
-using MeApuntoBackend.Services.Dto;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MeApuntoBackend.Controllers;
@@ -68,7 +67,7 @@ public class BookController : GenericController
         var success = _bookerManagementService.DeleteBook(input.Id, input.BookId);
         if (success)
         {
-            _statsService.AddBookerRecord(new ()
+            _statsService.AddBookerRecord(new()
             {
                 BookTime = input.Time,
                 CourtId = input.CourtId,

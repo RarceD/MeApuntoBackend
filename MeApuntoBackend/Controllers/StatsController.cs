@@ -10,7 +10,7 @@ public class StatsController : GenericController
 {
     private readonly IStatsService _statsService;
     private readonly IBookerManagementService _bookerManagementService;
-    public StatsController(ILogger<StatsController> logger, 
+    public StatsController(ILogger<StatsController> logger,
         IClientManagementService loginManagementService,
         IBookerManagementService bookerManagementService,
         IStatsService statsService)

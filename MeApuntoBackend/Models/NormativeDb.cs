@@ -1,6 +1,6 @@
 ﻿namespace MeApuntoBackend.Models
 {
-    public class NormativeDb 
+    public class NormativeDb
     {
         public int Id { get; set; }
         public string? Title { get; set; }
