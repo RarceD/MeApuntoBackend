@@ -2,8 +2,6 @@
 using MeApuntoBackend.Services.Dto;
 using MeApuntoBackend.Services.Factory;
 using MeApuntoBackend.Services.Interfaces;
-using Stripe;
-using Stripe.Checkout;
 
 namespace MeApuntoBackend.Services;
 public class PaymentService : IPaymentService

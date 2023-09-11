@@ -1,7 +1,5 @@
 ﻿using MeApuntoBackend.Controllers.Dtos;
-using MeApuntoBackend.Models;
 using MeApuntoBackend.Repositories;
-using System.Globalization;
 
 namespace MeApuntoBackend.Services;
 public class BookerService : IBookerService

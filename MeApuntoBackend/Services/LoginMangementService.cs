@@ -208,7 +208,7 @@ public class ClientManagementService : IClientManagementService
     }
     public IEnumerable<AdminDto> GetEmailContains(string str)
     {
-        if (string.IsNullOrEmpty(str)) return Enumerable.Empty<AdminDto>(); 
+        if (string.IsNullOrEmpty(str)) return Enumerable.Empty<AdminDto>();
         return _clientRepository.GetAll()
             .Where(client => client.username.Contains(str))
             .Select((client) => new AdminDto()
@@ -219,7 +219,7 @@ public class ClientManagementService : IClientManagementService
     }
     public IEnumerable<AdminDto> GetCodeContains(string str)
     {
-        if (string.IsNullOrEmpty(str)) return Enumerable.Empty<AdminDto>(); 
+        if (string.IsNullOrEmpty(str)) return Enumerable.Empty<AdminDto>();
         return _clientRepository.GetAll()
             .Where(client => client.name.ToLower().Contains(str))
             .Select((client) => new AdminDto()
