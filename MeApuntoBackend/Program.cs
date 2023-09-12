@@ -44,6 +44,11 @@ namespace MeApuntoBackend
             // Background services:
             builder.Services.AddHostedService<PeriodicTaskService>();
 
+            #if DEBUG
+            // Still in testing mode
+            builder.Services.AddHostedService<WebsocketHandler>();
+            #endif
+
 
             // Add logging
             builder.Services.AddLogging(logging =>
