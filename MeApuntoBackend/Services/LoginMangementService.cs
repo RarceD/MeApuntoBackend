@@ -45,7 +45,8 @@ public class ClientManagementService : IClientManagementService
                 floor = newClient.Floor,
                 letter = newClient.Door,
                 house = newClient.House,
-                plays = 0
+                plays = 0,
+                role = 0
             };
             _clientRepository.Add(client);
             return true;
@@ -221,12 +222,12 @@ public class ClientManagementService : IClientManagementService
     {
         if (string.IsNullOrEmpty(str)) return Enumerable.Empty<AdminDto>();
         return _clientRepository.GetAll()
-            .Where(client => client.name.ToLower().Contains(str))
-            .Select((client) => new AdminDto()
-            {
-                Code = client.name,
-                Email = client.username
-            });
+                .Where(client => client.name != null && client.name.ToLower().Contains(str))
+                .Select((client) => new AdminDto()
+                {
+                    Code = client.name,
+                    Email = client.username
+                });
     }
     public IEnumerable<StatsResponse> GetStats()
     {
