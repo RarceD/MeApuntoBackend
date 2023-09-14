@@ -47,6 +47,7 @@ namespace MeApuntoBackend
             #if DEBUG
             // Still in testing mode
             builder.Services.AddHostedService<WebsocketHandler>();
+            builder.Services.AddScoped<ExternalDeviceService>();
             #endif
 
 
