@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using MeApuntoBackend.Services.Dto;
+using System.Text.Json;
 
 namespace MeApuntoBackend.Services;
 public class ExternalDeviceService
@@ -11,8 +12,14 @@ public class ExternalDeviceService
         _httpClient = new HttpClient();
         _baseUri = string.Empty;
     }
+    public void GetDeviceStatus(Action<WSInteractionDto> action, WSInteractionDto received)
+    {
+        //  Simulate long time response
+        Thread.Sleep(1000);
+        action(received);
+    }
 
-    public async Task<string> GetAsync(string endpoint)
+    private async Task<string> GetAsync(string endpoint)
     {
         try
         {
