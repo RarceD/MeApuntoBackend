@@ -5,5 +5,5 @@ public class WSInteractionDto
 {
     public int clientId { get; set; }
     public WSMsgType type { get; set; }
-    public object? payload { get; set; }    
+    public object payload { get; set; }
 }

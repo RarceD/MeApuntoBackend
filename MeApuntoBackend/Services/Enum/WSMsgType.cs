@@ -1,5 +1,5 @@
 ﻿namespace MeApuntoBackend.Services.Enum;
 public enum WSMsgType
 {
-    DEVICE_CTR = 0,
+    DEVICE_CTR = 1,
 }
