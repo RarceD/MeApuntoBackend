@@ -51,8 +51,9 @@ public class ClientManagementService : IClientManagementService
             _clientRepository.Add(client);
             return true;
         }
-        catch (Exception)
+        catch (Exception e)
         {
+            _logger.LogWarning("[CREATE] Not able add ClientDb" + e.Message);
             return false;
         }
     }
