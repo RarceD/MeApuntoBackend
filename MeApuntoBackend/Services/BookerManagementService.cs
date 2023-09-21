@@ -255,7 +255,7 @@ public class BookerManagementService : IBookerManagementService
                 // TODO
             }
 
-            _mailService.SendConfirmationEmail(emailToSend, newBook.Day, newBook.Time, newBook.Duration);
+            _mailService.SendConfirmationEmail(emailToSend, newBook.Day, book.Time, newBook.Duration);
             _logger.LogWarning($"[BOOK] ClientId:{newBook.ClientId} has book for {book.CourtId} - {book.Time} - {book.Day}");
             return true;
         }
