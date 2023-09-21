@@ -97,6 +97,7 @@ public class BookerManagementService : IBookerManagementService
     public bool DeleteBook(int clientId, int bookId)
     {
         var scheduler = _schedulerRepository.GetById(bookId);
+        var timeToEmail = scheduler.Time;
         if (scheduler.ClientId != clientId)
         {
             _logger.LogError($"[BOOK] client {clientId} it trying to delete other book from client: {scheduler.ClientId}");
@@ -125,7 +126,7 @@ public class BookerManagementService : IBookerManagementService
             var email = _clientRepository.GetById(clientId).username;
             if (email != null)
             {
-                _mailService.SendCanceledEmail(email, scheduler.Day, scheduler.Time, scheduler.Duration);
+                _mailService.SendCanceledEmail(email, scheduler.Day, timeToEmail, scheduler.Duration);
             }
 
             var clientWhoNotBook = _clientRepository.GetById(clientId);
