@@ -1,5 +1,10 @@
 ﻿// NOT IN PRODUCTION:
 
+
+
+
+// IN PRODUCTION:
+
 // 04/09/2023
 CREATE TABLE BookerStats (
     Id           INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -8,10 +13,6 @@ CREATE TABLE BookerStats (
     RegisterTime TEXT,
     IsDelete     NUMERIC
 );
-
-
-
-// IN PRODUCTION:
 
 // 02/08/2023
 ALTER TABLE clients ADD COLUMN role NUMERIC;
@@ -25,3 +26,5 @@ UPDATE Urbas SET free=0;
 echo 1 > /proc/sys/vm/drop_caches
 
 
+
+sudo sh -c "sync; echo 3 > /proc/sys/vm/drop_caches"
