@@ -1,6 +1,8 @@
 # MeApunto.Online
-[![NET6Build](https://github.com/RarceD/MeApuntoBackend/actions/workflows/dotnet.yml/badge.svg?branch=main)](https://github.com/RarceD/MeApuntoBackend/actions/workflows/dotnet.yml)
 
+[![NET6Build](https://github.com/RarceD/MeApuntoBackend/actions/workflows/dotnet.yml/badge.svg?branch=main)](https://github.com/RarceD/MeApuntoBackend/actions/workflows/dotnet.yml)
+[![GitHub](https://img.shields.io/github/license/rarced/MeApuntoBackend)](LICENSE.md) 
+[![GitHub release (latest including pre-releases)](https://img.shields.io/github/v/release/rarced/MeApuntoBackend?color=green&include_prereleases&logo=github)](https://github.com/rarced/MeApuntoBackend/releases)
 ## What it is
 This is the second version of an existing backend wrote in flask (python), the first one has performance problems and was not
 scalable enough for all the clients requirements.
