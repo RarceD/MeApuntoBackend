@@ -1,4 +1,5 @@
 # MeApunto.Online
+[![NET6Build](https://github.com/RarceD/MeApuntoBackend/actions/workflows/dotnet.yml/badge.svg?branch=main)](https://github.com/RarceD/MeApuntoBackend/actions/workflows/dotnet.yml)
 
 ## What it is
 This is the second version of an existing backend wrote in flask (python), the first one has performance problems and was not
