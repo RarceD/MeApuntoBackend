@@ -1,11 +1,3 @@
-using MeApuntoBackend.Controllers.Dtos;
-using MeApuntoBackend.Models;
-using MeApuntoBackend.Repositories;
-using MeApuntoBackend.Services;
-using Microsoft.Extensions.Logging;
-using Moq;
-using System.Configuration;
-
 namespace UniTest
 {
     public class BookerManagementServiceTest
