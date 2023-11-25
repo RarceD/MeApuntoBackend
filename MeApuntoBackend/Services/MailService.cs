@@ -9,11 +9,14 @@ public class MailService : IMailService
     private string _emailSource;
     private string _host;
     private string _pass;
-    public MailService()
+
+    private readonly ILogger<MailService> _logger;
+    public MailService(ILogger<MailService> logger)
     {
         _emailSource = Config.EMAIL_SOURCE;
         _host = Config.HOST;
         _pass = Config.PASS;
+        _logger = logger;
     }
 
     private bool SendEmail(string toMailAddress, string title, string content)
@@ -31,8 +34,9 @@ public class MailService : IMailService
             _smtpClient.Send(_mailMessage);
             return true;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            _logger.LogWarning($"Error sending email to {toMailAddress} - {ex.Message}");
             return false;
         }
     }
