@@ -17,8 +17,10 @@ public class BookerManagementService : IBookerManagementService
     private readonly static CultureInfo spanishCulture = new("es-ES");
     private readonly IMailService _mailService;
     private readonly IBookerStatsRepository _bookerStatsRepository;
+    private readonly IBookerService _bookerStrategy;
 
     public BookerManagementService(IClientRepository clientRepository,
+          IServiceProvider serviceProvider,
           IUrbaRepository urbaRepository,
           ISchedulerRepository schedulerRepository,
           IConfigurationRepository configurationRepository,
@@ -35,6 +37,8 @@ public class BookerManagementService : IBookerManagementService
         _logger = logger;
         _mailService = mailService;
         _bookerStatsRepository = bookerStatsRepository;
+        _bookerStrategy = serviceProvider.GetRequiredService<IBookerService>();
+        _bookerStrategy.SetStrategy(BookerStategy.MAIN);
     }
 
     #endregion
