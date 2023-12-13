@@ -44,11 +44,11 @@ namespace MeApuntoBackend
             // Background services:
             builder.Services.AddHostedService<PeriodicTaskService>();
 
-            #if DEBUG
+#if DEBUG
             // Still in testing mode
             builder.Services.AddHostedService<WebsocketHandler>();
             builder.Services.AddScoped<ExternalDeviceService>();
-            #endif
+#endif
 
 
             // Add logging
@@ -97,6 +97,7 @@ namespace MeApuntoBackend
             builder.Services.AddScoped<IConfigurationRepository, ConfigurationRepository>();
             builder.Services.AddScoped<ILoginStatsRepository, LoginStatsRepository>();
             builder.Services.AddScoped<IBookerStatsRepository, BookerStatsRepository>();
+            builder.Services.AddScoped<IUrbaCodesRepository, UrbaCodesRepository>();
         }
     }
 }
