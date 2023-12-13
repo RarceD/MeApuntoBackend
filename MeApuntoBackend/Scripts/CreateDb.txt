@@ -83,3 +83,10 @@ CREATE TABLE BookerStats (
     IsDelete     NUMERIC
 );
 
+CREATE TABLE UrbaCodes (
+    Id     INTEGER PRIMARY KEY
+                   UNIQUE,
+    Code   TEXT    NOT NULL,
+    UrbaId INTEGER REFERENCES urbas (id) 
+                   NOT NULL
+);
