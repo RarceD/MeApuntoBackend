@@ -9,6 +9,7 @@ public class ClientManagementService : IClientManagementService
 {
     private readonly IClientRepository _clientRepository;
     private readonly IUrbaRepository _urbaRepository;
+    private readonly IUrbaCodesRepository _urbaCodesRepository;
     private readonly IMailService _mailService;
     private readonly ILogger<ClientManagementService> _logger;
     private readonly ILoginStatsRepository _loginStatsRepository;
@@ -20,8 +21,8 @@ public class ClientManagementService : IClientManagementService
         IUrbaRepository urbaRepository,
         IMailService mailService,
         IStatsService statsService,
-        ILoginStatsRepository loginStatsRepository
-        )
+        ILoginStatsRepository loginStatsRepository,
+        IUrbaCodesRepository urbaCodesRepository)
     {
         _clientRepository = clientRepository;
         _urbaRepository = urbaRepository;
@@ -29,6 +30,7 @@ public class ClientManagementService : IClientManagementService
         _logger = logger;
         _statsService = statsService;
         _loginStatsRepository = loginStatsRepository;
+        _urbaCodesRepository = urbaCodesRepository;
     }
 
     public bool AddClient(CreateDto newClient, int urbaId)
@@ -198,7 +200,14 @@ public class ClientManagementService : IClientManagementService
 
     private (string urbaKey, bool free) GetUrbaKey(string urbaCode)
     {
-        if (Config.URBA_CODES.TryGetValue(urbaCode, out int existCode))
+        Dictionary<string, int> urbaCodesDict = _urbaCodesRepository
+            .GetAll()
+            .ToDictionary(
+                code => code.Code ?? string.Empty,
+                code => code.UrbaId
+        );
+
+        if (urbaCodesDict.TryGetValue(urbaCode, out int existCode))
         {
             var urba = _urbaRepository.GetById(existCode);
             if (urba != null)
