@@ -1,6 +1,13 @@
 ﻿// NOT IN PRODUCTION:
 
-
+// 13/12/2023
+CREATE TABLE UrbaCodes (
+    Id     INTEGER PRIMARY KEY
+                   UNIQUE,
+    Code   TEXT    NOT NULL,
+    UrbaId INTEGER REFERENCES urbas (id) 
+                   NOT NULL
+);
 
 
 // IN PRODUCTION:
