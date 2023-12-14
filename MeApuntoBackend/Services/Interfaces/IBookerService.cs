@@ -2,8 +2,8 @@
 namespace MeApuntoBackend.Services;
 public enum BookerStategy
 {
-    MAIN,
-    SPECIFIC
+    MAIN = 0,
+    ONE_BOOK_ONLY
 };
 
 public interface IBookerService
