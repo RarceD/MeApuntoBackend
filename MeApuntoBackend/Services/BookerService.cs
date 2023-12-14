@@ -34,8 +34,12 @@ public class BookerService : IBookerService
                                     _logger);
                 break;
 
-            case BookerStategy.SPECIFIC:
-                // TODO
+            case BookerStategy.ONE_BOOK_ONLY:
+                _bookerStategy = new BookerOneOnlyStrategy(
+                                    _schedulerRepository,
+                                    _configurationRepository,
+                                    _mailService,
+                                    _logger);
                 break;
         }
     }
