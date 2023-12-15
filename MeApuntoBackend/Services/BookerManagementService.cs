@@ -38,7 +38,6 @@ public class BookerManagementService : IBookerManagementService
         _mailService = mailService;
         _bookerStatsRepository = bookerStatsRepository;
         _bookerStrategy = serviceProvider.GetRequiredService<IBookerService>();
-        _bookerStrategy.SetStrategy(BookerStategy.MAIN);
     }
 
     #endregion
@@ -81,11 +80,13 @@ public class BookerManagementService : IBookerManagementService
         UrbaDb urba = _urbaRepository.GetById(clienteWhoBook.urba_id);
         if (urba == null) return false;
 
+        SetBookerType(urba.strategy_type);
+
         // TODO: In case at 12:00 two fucking clients try to book same hour/day
         lock (this)
         {
             // Validate time and hour:
-            if (!ValidDayHour(newBook, clienteWhoBook.id)) return false;
+            if (!_bookerStrategy.ValidDayHour(newBook, clienteWhoBook.id)) return false;
             // Finally make the book:
             bool success = MakeBook(newBook, clienteWhoBook.username ?? string.Empty);
             // Update stats from player:
@@ -163,57 +164,18 @@ public class BookerManagementService : IBookerManagementService
     }
 
     #region Private Method
-    private bool ValidDayHour(BookerDto newBook, int clientId)
+    private void SetBookerType(int strategyToBook)
     {
-        List<ConfigurationDb> validHours = _configurationRepository.GetAllFromCourtId(newBook.CourtId);
-        if (validHours.Count() == 0) return false;
-
-        // First check if hour is valid according configuration:
-        if (!validHours.Select(i => i.ValidHour).Contains(newBook.Time)) return false;
-
-        // Check someone has previously book same day but other courts:
-        var bookThisDayBySameUser = _schedulerRepository.GetBookInDay(newBook.Day ?? string.Empty)
-            .Where(b => b.ClientId == clientId).ToList();
-        if (bookThisDayBySameUser.Any()) return false;
-
-        // Check someone has previously book same court
-        var bookThisDay = _schedulerRepository.GetBookInDay(newBook.Day ?? string.Empty).Where(c => c.CourtId == newBook.CourtId).ToList();
-        foreach (var b in bookThisDay)
+        if (strategyToBook == (int)BookerStategy.ONE_BOOK_ONLY)
         {
-            // If I have previously book same court break
-            if (b.ClientId == newBook.Id)
-            {
-                _logger.LogWarning($"[BOOK] client {newBook.Id} has book same court for same day");
-                return false;
-            }
-            else
-            {
-                // TODO: Verify that booking more than one hours works:
-                if (newBook.Duration == DurationType.ONE_HALF_HOUR)
-                {
-                    // Check that then next hour, for example book at 13:00 two fucking hours so 14:00 must be free
-                    var hourToVerifyIsFree = GetNextHour(newBook.Time ?? string.Empty);
-                    if (bookThisDay.FirstOrDefault(t => t.Time == hourToVerifyIsFree) != null)
-                    {
-                        return false;
-                    }
-                    hourToVerifyIsFree = GetNextHour(hourToVerifyIsFree);
-                    if (bookThisDay.FirstOrDefault(t => t.Time == hourToVerifyIsFree) != null)
-                    {
-                        return false;
-                    }
-                }
-                // If other client has previously book same court SAME hour:
-                if (b.CourtId == newBook.CourtId && b.Time == newBook.Time)
-                {
-                    _logger.LogWarning("Other client has book same court for same day");
-                    return false;
-                }
-            }
-
+            _bookerStrategy.SetStrategy(BookerStategy.ONE_BOOK_ONLY);
         }
-        return true;
+        else
+        {
+            _bookerStrategy.SetStrategy(BookerStategy.MAIN);
+        }
     }
+
     private static string GetNextHour(string currentTime)
     {
         if (currentTime.Split(":")[1] == "30")

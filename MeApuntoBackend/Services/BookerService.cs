@@ -20,6 +20,9 @@ public class BookerService : IBookerService
         _configurationRepository = configurationRepository;
         _mailService = mailService;
         _logger = logger;
+
+        // By default I set the most liked booking way 
+        SetStrategy(BookerStategy.MAIN);
     }
 
     public void SetStrategy(BookerStategy strategy)
@@ -43,13 +46,6 @@ public class BookerService : IBookerService
                 break;
         }
     }
-
-    public bool MakeABook(BookerDto newBook, string emailToSend)
-    {
-        if (_bookerStategy == null) throw new InvalidOperationException();
-        return _bookerStategy.MakeABook(newBook, emailToSend);
-    }
-
     public bool ValidDayHour(BookerDto newBook, int clientId)
     {
         if (_bookerStategy == null) throw new InvalidOperationException();

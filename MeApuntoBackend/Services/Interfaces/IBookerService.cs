@@ -9,6 +9,5 @@ public enum BookerStategy
 public interface IBookerService
 {
     void SetStrategy(BookerStategy strategy);
-    bool MakeABook(BookerDto newBook, string emailToSend);
     bool ValidDayHour(BookerDto newBook, int clientId);
 }

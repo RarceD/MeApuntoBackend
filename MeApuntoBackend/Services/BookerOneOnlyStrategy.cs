@@ -22,52 +22,6 @@ public class BookerOneOnlyStrategy : IBookerStategy
         _logger = logger;
     }
 
-    public bool MakeABook(BookerDto book, string emailToSend)
-    {
-        SchedulerDb newBook = ConvertBookerToScheduler(book);
-        try
-        {
-            // TODO: this is a piece of shit and should be refactor:
-            _schedulerRepository.Add(newBook);
-            if (newBook.Duration == DurationType.ONE_HOUR)
-            {
-                // Second not visible 30 min after:
-                newBook = ConvertBookerToScheduler(book);
-                newBook.Show = false;
-                newBook.Time = GetNextHour(newBook.Time ?? string.Empty);
-                _schedulerRepository.Add(newBook);
-            }
-            else if (newBook.Duration == DurationType.ONE_HALF_HOUR)
-            {
-                // Second not visible 30 min after:
-                newBook = ConvertBookerToScheduler(book);
-                newBook.Show = false;
-                newBook.Time = GetNextHour(newBook.Time ?? string.Empty);
-                _schedulerRepository.Add(newBook);
-
-                // Second not visible 30 min after:
-                newBook = ConvertBookerToScheduler(book);
-                newBook.Show = false;
-                newBook.Time = GetNextHour(GetNextHour(newBook.Time ?? string.Empty));
-                _schedulerRepository.Add(newBook);
-            }
-            else if (newBook.Duration == DurationType.TWO_HOURS)
-            {
-                // TODO
-            }
-
-            _mailService.SendConfirmationEmail(emailToSend, newBook.Day, newBook.Time, newBook.Duration);
-            _logger.LogWarning($"[BOOK] ClientId:{newBook.ClientId} has book for {book.CourtId} - {book.Time} - {book.Day}");
-            return true;
-        }
-        catch (Exception e)
-        {
-            _logger.LogError($"[BOOK] ClientId:{newBook.ClientId} has NOT book for {newBook.CourtId} - {newBook.Time} - {newBook.Day}");
-            _logger.LogError($"[BOOK] Exception launch:{e.Message}");
-            return false;
-        }
-    }
-
     public bool ValidDayHour(BookerDto newBook, int clientId)
     {
         List<ConfigurationDb> validHours = _configurationRepository.GetAllFromCourtId(newBook.CourtId);
@@ -76,9 +30,17 @@ public class BookerOneOnlyStrategy : IBookerStategy
         // First check if hour is valid according configuration:
         if (!validHours.Select(i => i.ValidHour).Contains(newBook.Time)) return false;
 
+        // Check if there are more active books for this client:
+        var booksBySameUser = _schedulerRepository.GetByClientId(clientId);
+        if (booksBySameUser.Count() > 0)
+        {
+            _logger.LogWarning($"[BOOK] client {newBook.Id} try booking when have a previous book");
+            return false;
+        }
+
         // Check someone has previously book same day but other courts:
         var bookThisDayBySameUser = _schedulerRepository.GetBookInDay(newBook.Day ?? string.Empty)
-            .Where(b => b.ClientId == clientId).ToList();
+        .Where(b => b.ClientId == clientId).ToList();
         if (bookThisDayBySameUser.Any()) return false;
 
         // Check someone has previously book same court
@@ -131,18 +93,4 @@ public class BookerOneOnlyStrategy : IBookerStategy
             return currentTime.Split(":")[0] + ":30";
         }
     }
-
-    private static SchedulerDb ConvertBookerToScheduler(BookerDto book)
-    {
-        return new SchedulerDb()
-        {
-            ClientId = book.Id,
-            CourtId = book.CourtId,
-            Time = book.Time,
-            Day = book.Day,
-            Duration = book.Duration,
-            Show = true
-        };
-    }
-
 }

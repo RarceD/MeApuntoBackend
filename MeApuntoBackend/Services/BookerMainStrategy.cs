@@ -22,52 +22,6 @@ public class BookerMainStrategy : IBookerStategy
         _logger = logger;
     }
 
-    public bool MakeABook(BookerDto book, string emailToSend)
-    {
-        SchedulerDb newBook = ConvertBookerToScheduler(book);
-        try
-        {
-            // TODO: this is a piece of shit and should be refactor:
-            _schedulerRepository.Add(newBook);
-            if (newBook.Duration == DurationType.ONE_HOUR)
-            {
-                // Second not visible 30 min after:
-                newBook = ConvertBookerToScheduler(book);
-                newBook.Show = false;
-                newBook.Time = GetNextHour(newBook.Time ?? string.Empty);
-                _schedulerRepository.Add(newBook);
-            }
-            else if (newBook.Duration == DurationType.ONE_HALF_HOUR)
-            {
-                // Second not visible 30 min after:
-                newBook = ConvertBookerToScheduler(book);
-                newBook.Show = false;
-                newBook.Time = GetNextHour(newBook.Time ?? string.Empty);
-                _schedulerRepository.Add(newBook);
-
-                // Second not visible 30 min after:
-                newBook = ConvertBookerToScheduler(book);
-                newBook.Show = false;
-                newBook.Time = GetNextHour(GetNextHour(newBook.Time ?? string.Empty));
-                _schedulerRepository.Add(newBook);
-            }
-            else if (newBook.Duration == DurationType.TWO_HOURS)
-            {
-                // TODO
-            }
-
-            _mailService.SendConfirmationEmail(emailToSend, newBook.Day, newBook.Time, newBook.Duration);
-            _logger.LogWarning($"[BOOK] ClientId:{newBook.ClientId} has book for {book.CourtId} - {book.Time} - {book.Day}");
-            return true;
-        }
-        catch (Exception e)
-        {
-            _logger.LogError($"[BOOK] ClientId:{newBook.ClientId} has NOT book for {newBook.CourtId} - {newBook.Time} - {newBook.Day}");
-            _logger.LogError($"[BOOK] Exception launch:{e.Message}");
-            return false;
-        }
-    }
-
     public bool ValidDayHour(BookerDto newBook, int clientId)
     {
         List<ConfigurationDb> validHours = _configurationRepository.GetAllFromCourtId(newBook.CourtId);
@@ -130,19 +84,6 @@ public class BookerMainStrategy : IBookerStategy
         {
             return currentTime.Split(":")[0] + ":30";
         }
-    }
-
-    private static SchedulerDb ConvertBookerToScheduler(BookerDto book)
-    {
-        return new SchedulerDb()
-        {
-            ClientId = book.Id,
-            CourtId = book.CourtId,
-            Time = book.Time,
-            Day = book.Day,
-            Duration = book.Duration,
-            Show = true
-        };
     }
 
 }
