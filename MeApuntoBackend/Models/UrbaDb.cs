@@ -7,4 +7,5 @@ public class UrbaDb
     public string? key { get; set; }
     public int advance_book { get; set; }
     public bool free { get; set; }
+    public int strategy_type { get; set; }
 }
