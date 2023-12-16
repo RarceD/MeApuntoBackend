@@ -163,6 +163,15 @@ public class BookerManagementService : IBookerManagementService
         }).ToList();
     }
 
+    public bool IsValidUrbaDate(int clientId)
+    {
+        int urbaId = _clientRepository.GetById(clientId).urba_id;
+        UrbaDb urba = _urbaRepository.GetById(urbaId);
+        if (urba == null) return false;
+        var startDate = DateTime.Parse(urba.start_date ?? string.Empty);
+        return startDate <= DateTime.Now;
+    }
+
     #region Private Method
     private void SetBookerType(int strategyToBook)
     {

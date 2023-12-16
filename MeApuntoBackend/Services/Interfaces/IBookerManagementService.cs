@@ -7,4 +7,5 @@ public interface IBookerManagementService
     IEnumerable<BookerResponse> GetBooks(int clientId);
     bool DeleteBook(int clientId, int bookId);
     IEnumerable<BookerStatsDto> GetStats();
+    bool IsValidUrbaDate(int clientId);
 }

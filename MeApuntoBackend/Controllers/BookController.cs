@@ -82,4 +82,11 @@ public class BookController : GenericController
             return Error();
         }
     }
+
+    [HttpGet("urbaDate")]
+    public bool IsValidUrbaDate(string token, int id)
+    {
+        if (!CheckUserTokenId(token, id)) return false;
+        return _bookerManagementService.IsValidUrbaDate(id);
+    }
 }
