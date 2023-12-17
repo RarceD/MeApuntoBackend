@@ -18,6 +18,13 @@ public class MailService : IMailService
         _pass = Config.PASS;
         _logger = logger;
     }
+    public MailService(ILogger<MailService> logger, string host, string pass, string emailSource)
+    {
+        _emailSource = emailSource;
+        _host = host;
+        _pass = pass;
+        _logger = logger;
+    }
 
     private bool SendEmail(string toMailAddress, string title, string content)
     {
