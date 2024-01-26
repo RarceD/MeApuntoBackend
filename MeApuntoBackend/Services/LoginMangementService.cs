@@ -160,7 +160,7 @@ public class ClientManagementService : IClientManagementService
     }
     public bool ForgetPassword(string username)
     {
-        username = username.ToLower();
+        username = username.ToLower().Replace(" ", "");
         // Get client id:
         ClientDb? client = _clientRepository.GetClientWithUser(username);
         if (client == null) return false;
