@@ -1,5 +1,6 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 
 public static class Utils
 {
@@ -14,6 +15,11 @@ public static class Utils
         byte[] bytes = Encoding.ASCII.GetBytes(input);
         byte[] hash = MD5.Create().ComputeHash(bytes);
         return Convert.ToHexString(hash);
+    }
+    public static bool IsValidEmail(string email)
+    {
+        const string pattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
+        return new Regex(pattern).IsMatch(email);
     }
 
 }
