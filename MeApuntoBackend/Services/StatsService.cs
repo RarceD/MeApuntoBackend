@@ -12,6 +12,7 @@ public class StatsService : IStatsService
     private readonly ConcurrentStack<BookerRecord> _bookerRecords;
     private readonly System.Timers.Timer _dbTimer;
     private const int TIME_STORE_DB_SECONDS = 60 * 5; // Every 5 min I clear db
+    private bool _disableStats = true;
 
     public StatsService(IServiceScopeFactory scopeFactory)
     {
@@ -43,25 +44,27 @@ public class StatsService : IStatsService
             {
                 if (_bookerRecords.TryPop(out BookerRecord? element))
                 {
-                    bookerStats.Add(new()
-                    {
-                        CourtId = element.CourtId,
-                        BookTime = element.BookTime,
-                        IsDelete = element.IsDelete,
-                        RegisterTime = element.RegisterTime
-                    });
+                    if (!_disableStats)
+                        bookerStats.Add(new()
+                        {
+                            CourtId = element.CourtId,
+                            BookTime = element.BookTime,
+                            IsDelete = element.IsDelete,
+                            RegisterTime = element.RegisterTime
+                        });
                 }
             }
             while (!_loginRecords.IsEmpty)
             {
                 if (_loginRecords.TryPop(out LoginRecord? element))
                 {
-                    loginStats.Add(new()
-                    {
-                        RegisterTime = element.RegisterTime.ToString(),
-                        Success = element.Success,
-                        AutoLogin = element.AutoLogin
-                    });
+                    if (!_disableStats)
+                        loginStats.Add(new()
+                        {
+                            RegisterTime = element.RegisterTime.ToString(),
+                            Success = element.Success,
+                            AutoLogin = element.AutoLogin
+                        });
                 }
             }
         }
