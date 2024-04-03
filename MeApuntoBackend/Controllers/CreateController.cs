@@ -28,6 +28,12 @@ public class CreateController : ControllerBase
         if (input.User == null) return resp;
         input.User = input.User.ToLower().Replace(" ", "").ToString();
 
+        if (!Utils.IsValidEmail(input.User))
+        {
+            _logger.LogWarning("[CREATE] ERROR invalid email used: " + input.User);
+            return resp;
+        }
+
         // Validate urba key:
         var urbaId = _loginManagementService.GetValidUrbaKeyId(input.Key);
         if (urbaId == 0)
