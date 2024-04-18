@@ -87,7 +87,10 @@ public class ClientManagementService : IClientManagementService
     {
         // Check the format is like: XXX.0.0.0
         if (!Regex.IsMatch(code, @"^[a-zA-Z0-9.]+$"))
+        {
+            _logger.LogWarning("[CREATE] invalid user code regex validator");
             return false;
+        }
 
         return _clientRepository.IsValidUserCode(code);
     }
