@@ -1,0 +1,21 @@
+﻿# Let's encrypt:
+
+## For see all certificates:
+
+```sh
+sudo certbot certificates
+```
+
+## For renew specific certificate:
+
+```sh
+certbot renew --cert-name www.galletas.es --dry-run
+```
+
+## Generate new:
+
+sudo certbot --nginx -d galletas.es -d www.galletas.es
+
+## Delete certificate:
+sudo certbot delete --cert-name galletas.es
+
