@@ -23,7 +23,7 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore MeApuntoBackend.sln
     - name: Build App
-      run: dotnet build MeApuntoBackend.csproj --configuration Release --no-restore
+      run: dotnet build MeApuntoBackend/MeApuntoBackend.csproj --configuration Release --no-restore
     - name: Build Test
       run: dotnet build UniTest/UniTest.csproj --configuration Release --no-restore
     - name: Test
