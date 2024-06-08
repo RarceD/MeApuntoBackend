@@ -5,7 +5,6 @@ services:
     container_name: meapunto_backend
     image: backend:1
     build:
-      context: ./App
       dockerfile: Dockerfile    
 
     environment:
