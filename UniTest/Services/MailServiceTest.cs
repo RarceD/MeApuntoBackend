@@ -5,7 +5,6 @@ namespace UniTest.Services;
 [TestFixture]
 public class MailServiceTest
 {
-    private static string mailAddres = "asdftest1234@gmail.com";
 
     [SetUp]
     public void SetUp()

@@ -17,10 +17,10 @@ public class PeriodicTaskServiceTests
     }
 
     [Test]
-    public async Task ExecuteAsync_WhenCalled_SetsTimerBookerCleaner()
+    public void ExecuteAsync_WhenCalled_SetsTimerBookerCleaner()
     {
         // Arrange
-        var cancellationToken = new CancellationToken();
+        // var cancellationToken = new CancellationToken();
 
         // Act
         // await _periodicTaskService.ExecuteAsync(cancellationToken);

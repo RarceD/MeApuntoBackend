@@ -20,7 +20,7 @@ public class BookerManagementServiceTests
     private IBookerStatsRepository _bookerStatsRepository;
     private IBookerService _bookerStrategy;
     private IServiceProvider _serviceProvider;
-    private BookerManagementService _bookerManagementService;
+    // private BookerManagementService? _bookerManagementService;
 
     [SetUp]
     public void Setup()

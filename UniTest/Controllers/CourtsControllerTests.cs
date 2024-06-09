@@ -1,6 +1,7 @@
 using MeApuntoBackend.Controllers;
 using MeApuntoBackend.Controllers.Dtos;
 using MeApuntoBackend.Services;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 
 namespace UniTest.Controllers;
@@ -17,7 +18,9 @@ public class CourtsControllerTests
     {
         _loginManagementService = Substitute.For<IClientManagementService>();
         _courtManagementService = Substitute.For<ICourtManagementService>();
-        _courtsController = new CourtsController(null, _loginManagementService, _courtManagementService);
+        _courtManagementService = Substitute.For<ICourtManagementService>();
+        var logger = Substitute.For<ILogger<LoginController>>();
+        _courtsController = new CourtsController(logger, _loginManagementService, _courtManagementService);
     }
 
     [Test]
