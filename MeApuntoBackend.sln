@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33424.131
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeApuntoBackend", "MeApuntoBackend\MeApuntoBackend.csproj", "{85817604-D304-4FC5-978E-BD62D8AF5B76}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UniTest", "UniTest\UniTest.csproj", "{178BCE8D-02E1-465A-BDFD-A39125636367}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{85817604-D304-4FC5-978E-BD62D8AF5B76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{85817604-D304-4FC5-978E-BD62D8AF5B76}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{85817604-D304-4FC5-978E-BD62D8AF5B76}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{85817604-D304-4FC5-978E-BD62D8AF5B76}.Release|Any CPU.Build.0 = Release|Any CPU
+		{178BCE8D-02E1-465A-BDFD-A39125636367}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{178BCE8D-02E1-465A-BDFD-A39125636367}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{178BCE8D-02E1-465A-BDFD-A39125636367}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{178BCE8D-02E1-465A-BDFD-A39125636367}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C01C9E01-8598-41DC-88B5-AC5428A6604F}
+	EndGlobalSection
+EndGlobal

@@ -30,3 +30,21 @@ This app let you store booking information about your tenis/padel/yoga classes i
 | Deployment   | **VPS Ubuntu 20.4** |
 | Proxy   | **Nginx** |
 
+## Run with docker
+
+```sh
+docker build -t backend .
+docker run --name backend -p 5001:5001 backend
+```
+
+Check if the app is running ok:
+
+```sh
+curl localhost:5001/api/alive
+```
+
+See the logs:
+
+```sh
+docker exec -it backend bash
+```
