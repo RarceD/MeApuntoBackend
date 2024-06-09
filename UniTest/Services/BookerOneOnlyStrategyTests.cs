@@ -31,7 +31,7 @@ public class BookerOneOnlyStrategyTests
     {
         // Arrange
         var newBook = new BookerDto { CourtId = 1, Time = "10:00", Day = "2022-12-31", Duration = DurationType.ONE_HOUR, Id = 1 };
-        var clientId = 1;
+        // var clientId = 1;
         _configurationRepository.GetAllFromCourtId(newBook.CourtId).Returns(new List<ConfigurationDb> { new ConfigurationDb { ValidHour = "10:00" } });
         //_schedulerRepository.GetByClientId(clientId).Returns(new List<BookerDto>());
         //_schedulerRepository.GetBookInDay(newBook.Day).Returns(new List<BookerDto>());

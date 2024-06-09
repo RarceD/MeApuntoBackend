@@ -29,8 +29,8 @@ public class BookerServiceTests
     public void ValidDayHour_WhenCalled_ReturnsExpectedResult()
     {
         // Arrange
-        var newBook = new BookerDto { CourtId = 1, Time = "10:00", Day = "2022-12-31", Duration = DurationType.ONE_HOUR, Id = 1 };
-        var clientId = 1;
+        //var newBook = new BookerDto { CourtId = 1, Time = "10:00", Day = "2022-12-31", Duration = DurationType.ONE_HOUR, Id = 1 };
+        //var clientId = 1;
 
         // Act
         // var result = _bookerService.ValidDayHour(newBook, clientId);

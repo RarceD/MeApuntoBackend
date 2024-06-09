@@ -131,7 +131,10 @@ public class BookerManagementService : IBookerManagementService
             var email = _clientRepository.GetById(clientId).username;
             if (email != null)
             {
-                _mailService.SendCanceledEmail(email, scheduler.Day, timeToEmail, scheduler.Duration);
+                _mailService.SendCanceledEmail(email,
+                    scheduler.Day ?? string.Empty,
+                    timeToEmail ?? string.Empty,
+                    scheduler.Duration ?? string.Empty);
             }
 
             var clientWhoNotBook = _clientRepository.GetById(clientId);
@@ -231,7 +234,10 @@ public class BookerManagementService : IBookerManagementService
                 // TODO
             }
 
-            _mailService.SendConfirmationEmail(emailToSend, newBook.Day, book.Time, newBook.Duration);
+            _mailService.SendConfirmationEmail(emailToSend,
+                newBook.Day ?? string.Empty,
+                book.Time ?? string.Empty,
+                newBook.Duration ?? string.Empty);
             _logger.LogWarning($"[BOOK] ClientId:{newBook.ClientId} has book for {book.CourtId} - {book.Time} - {book.Day}");
             return true;
         }

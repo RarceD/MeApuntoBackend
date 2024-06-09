@@ -38,9 +38,9 @@ public class AdminControllerTests
     public void GetMatchEmail_WhenCalled_ReturnsOkResult()
     {
         // Arrange
-        var token = "Token";
-        var id = 1;
-        var matchStr = "MatchStr";
+        //var token = "Token";
+        //var id = 1;
+        //var matchStr = "MatchStr";
         // _clientManagementService.IsAdmin(id, token).Returns(true);
         // _clientManagementService.GetEmailContains(matchStr.ToLower()).Returns(new List<string>());
 
