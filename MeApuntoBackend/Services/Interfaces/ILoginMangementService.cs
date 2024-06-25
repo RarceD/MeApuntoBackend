@@ -7,6 +7,7 @@ public interface IClientManagementService
     int GetValidUrbaKeyId(string key);
     bool IsValidUserCode(string code);
     bool AddClient(CreateDto newClient, int urbaId);
+    bool RemoveClient(string username);
     ProfileResponse? GetProfileInfo(int id);
     bool UpdateUserProfile(ProfileDto profileId);
     bool CheckUserTokenId(string token, int id);

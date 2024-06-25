@@ -1,3 +1,4 @@
+using MeApuntoBackend.Controllers.Dtos;
 using MeApuntoBackend.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,6 +12,13 @@ public class AdminController : GenericController
     {
     }
 
+    [HttpPost("delete")]
+    public IActionResult DeleteUser(AdminDeleteDto clientToDelete)
+    {
+        if (!IsAdmin(clientToDelete.Id, clientToDelete.Token)) return GetNotAdminResponse();
+        string username = clientToDelete.MatchStr.ToLower();
+        return Ok(_clientManagementService.RemoveClient(username));
+    }
     [HttpGet("code")]
     public IActionResult GetMatchCode(string token, int id, string matchStr)
     {
