@@ -17,7 +17,7 @@ public class AdminController : GenericController
     {
         if (!IsAdmin(clientToDelete.Id, clientToDelete.Token)) return GetNotAdminResponse();
         string username = clientToDelete.MatchStr.ToLower();
-        return Ok(_clientManagementService.RemoveClient(username));
+        return _clientManagementService.RemoveClient(username) ? Success() : Error();
     }
     [HttpGet("code")]
     public IActionResult GetMatchCode(string token, int id, string matchStr)
