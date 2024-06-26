@@ -252,4 +252,11 @@ public class ClientManagementService : IClientManagementService
             });
     }
 
+    public bool RemoveClient(string username)
+    {
+        ClientDb? clientToDelete = _clientRepository.GetClientWithUser(username);
+        if (clientToDelete is null) return false;
+        _clientRepository.Remove(clientToDelete);
+        return true;
+    }
 }
