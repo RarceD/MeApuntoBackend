@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  backend-tool:
+    image: backend:latest  # This should match the image name you give when building the Dockerfile
+    build:
+      context: .   # The directory containing your Dockerfile
+      dockerfile: Dockerfile
+    ports:
+      - "5000:80"  # Mapping the container's port to your local port (adjust as needed)
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"  # Set environment variable, modify if needed
+    volumes:
+      - ./logs:/App/logs  # If you want to map local folders to container, for example logs or config files
+    restart: unless-stopped  # Restart the service automatically unless stopped manually
