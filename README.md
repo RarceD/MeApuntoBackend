@@ -46,5 +46,9 @@ curl localhost:5001/api/alive
 See the logs:
 
 ```sh
-docker exec -it backend bash
+docker system prune -a
+docker-compose build
+docker-compose up -d
 ```
+
+docker exec -it hydroplus_back bash
