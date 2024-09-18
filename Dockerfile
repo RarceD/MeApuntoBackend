@@ -1,6 +1,5 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 WORKDIR /App
-EXPOSE 5001
 
 # Copy everything
 COPY . ./
@@ -13,4 +12,5 @@ RUN dotnet publish -f net8.0 -c Release -o out
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /App
 COPY --from=build-env /App/out .
+
 ENTRYPOINT ["dotnet", "MeApuntoBackend.dll"]
